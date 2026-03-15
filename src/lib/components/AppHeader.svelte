@@ -8,6 +8,8 @@
 		title?: string;
 		subtitle?: string;
 	} = $props();
+
+	import ThemeToggle from './ThemeToggle.svelte';
 </script>
 
 <header class="app-header">
@@ -30,6 +32,7 @@
 		{/if}
 		
 		<div class="header-right">
+			<ThemeToggle />
 			<button type="button" class="logout-btn">Logout</button>
 		</div>
 	</div>
@@ -40,9 +43,18 @@
 		position: sticky;
 		top: 0;
 		z-index: 50;
+		background-color: var(--color-bg-base);
+		border-bottom: 1px solid var(--color-border);
+	}
+	
+	:root:not(.light) .app-header {
 		background-color: rgba(15, 17, 23, 0.95);
 		backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--color-border);
+	}
+
+	:root.light .app-header {
+		background-color: rgba(248, 250, 252, 0.8);
+		backdrop-filter: blur(12px);
 	}
 	
 	.header-content {
@@ -107,6 +119,8 @@
 		flex: 1;
 		display: flex;
 		justify-content: flex-end;
+		gap: 0.75rem;
+		align-items: center;
 	}
 	
 	.logout-btn {

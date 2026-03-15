@@ -7,6 +7,7 @@ class MrdpStore {
 	themengebiete = $state<Themengebiet[]>(mockData.themengebiete as Themengebiet[]);
 	kommission = $state<Kommissionsmitglied[]>(mockData.kommissionsmitglieder as Kommissionsmitglied[]);
 	antritte = $state<Antritt[]>(mockData.antritte as Antritt[]);
+	theme = $state<'light' | 'dark'>('dark');
 
 	constructor() {
 		// Load from localStorage if available (client-side only)
@@ -19,12 +20,38 @@ class MrdpStore {
 					console.error('Failed to parse localStorage data', e);
 				}
 			}
+
+			const savedTheme = localStorage.getItem('mrdp_theme');
+			if (savedTheme === 'light' || savedTheme === 'dark') {
+				this.theme = savedTheme;
+			} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+				this.theme = 'light';
+			}
+			
+			this.applyTheme();
 		}
 	}
 
 	private saveToLocalStorage() {
 		if (typeof window !== 'undefined') {
 			localStorage.setItem('mrdp_antritte', JSON.stringify(this.antritte));
+			localStorage.setItem('mrdp_theme', this.theme);
+		}
+	}
+
+	toggleTheme() {
+		this.theme = this.theme === 'light' ? 'dark' : 'light';
+		this.saveToLocalStorage();
+		this.applyTheme();
+	}
+
+	private applyTheme() {
+		if (typeof document !== 'undefined') {
+			if (this.theme === 'light') {
+				document.documentElement.classList.add('light');
+			} else {
+				document.documentElement.classList.remove('light');
+			}
 		}
 	}
 
