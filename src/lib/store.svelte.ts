@@ -10,6 +10,7 @@ class MrdpStore {
 	theme = $state<'light' | 'dark'>('dark');
 	loading = $state(true);
 	error = $state<string | null>(null);
+	now = $state<Date>(new Date());
 	// Map of antrittId -> { startVB: fullISO, beginn: fullISO, ende: fullISO }
 	private _fullDates = new Map<string | number, { startVB: string | null, beginn: string | null, ende: string | null }>();
 
@@ -40,6 +41,13 @@ class MrdpStore {
 	async init() {
 		this.loading = true;
 		this.error = null;
+
+		// Update 'now' every minute
+		if (typeof window !== 'undefined') {
+			setInterval(() => {
+				this.now = new Date();
+			}, 60000);
+		}
 
 		try {
 			const [
@@ -141,10 +149,20 @@ class MrdpStore {
 		return this.kommission.find((m) => String(m.id) === String(id));
 	}
 
+	private isTimePassed(time: string | null): boolean {
+		if (!time) return false;
+		
+		const [hours, minutes] = time.split(':').map(Number);
+		const timeDate = new Date(this.now);
+		timeDate.setHours(hours, minutes, 0, 0);
+		
+		return this.now >= timeDate;
+	}
+
 	getExamState(antritt: Antritt): ExamState {
-		if (antritt.ende) return 'done';
-		if (antritt.beginn) return 'exam';
-		if (antritt.startVB) return 'prep';
+		if (this.isTimePassed(antritt.ende)) return 'done';
+		if (this.isTimePassed(antritt.beginn)) return 'exam';
+		if (this.isTimePassed(antritt.startVB)) return 'prep';
 		return 'waiting';
 	}
 

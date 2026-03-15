@@ -19,6 +19,8 @@
 	// Helper for checking if page is valid
 	let isValidTarget = $derived(!!(antritt && kandidat && fach));
 
+	let status = $derived(antritt ? store.getExamState(antritt) : 'waiting');
+
 	let computedMark = $derived.by(() => {
 		if (antritt && antritt.pruefungsnote && antritt.jahresnote) {
 			return Math.round((antritt.pruefungsnote + antritt.jahresnote) / 2);
@@ -83,21 +85,21 @@
 		
 		<main class="detail-content">
 			<!-- Timeline visual indicator -->
-			<div class="timeline-banner">
+			<div class="timeline-banner status-{status}">
 				<div class="timeline-container">
 					<div class="timeline-line">
-						<div class="timeline-progress" style="width: {antritt?.ende ? '100%' : (antritt?.beginn ? '50%' : (antritt?.startVB ? '5%' : '0%'))}"></div>
+						<div class="timeline-progress" style="width: {status === 'done' ? '100%' : (status === 'exam' ? '50%' : (status === 'prep' ? '12.5%' : '0%'))}"></div>
 					</div>
 					<div class="timeline-stops">
-						<div class="stop" class:active={!!antritt?.startVB}>
+						<div class="stop" class:active={status !== 'waiting'}>
 							<div class="dot"></div>
 							<span>Start</span>
 						</div>
-						<div class="stop" class:active={!!antritt?.beginn}>
+						<div class="stop" class:active={status === 'exam' || status === 'done'}>
 							<div class="dot"></div>
 							<span>Beginn</span>
 						</div>
-						<div class="stop" class:active={!!antritt?.ende}>
+						<div class="stop" class:active={status === 'done'}>
 							<div class="dot"></div>
 							<span>Ende</span>
 						</div>
@@ -300,9 +302,14 @@
 	
 	.timeline-progress {
 		height: 100%;
-		background-color: var(--color-accent);
-		transition: width 300ms ease;
+		background-color: var(--status-color, var(--color-accent));
+		transition: all 400ms ease;
 	}
+	
+	.timeline-banner.status-waiting { --status-color: var(--color-state-waiting); }
+	.timeline-banner.status-prep { --status-color: var(--color-state-prep); }
+	.timeline-banner.status-exam { --status-color: var(--color-state-exam); }
+	.timeline-banner.status-done { --status-color: var(--color-state-done); }
 	
 	.timeline-stops {
 		position: relative;
@@ -324,7 +331,7 @@
 	}
 	
 	.stop.active .dot {
-		background-color: var(--color-accent);
+		background-color: var(--status-color, var(--color-accent));
 		border-color: var(--color-bg-surface);
 		box-shadow: 0 0 0 4px var(--color-bg-surface);
 	}

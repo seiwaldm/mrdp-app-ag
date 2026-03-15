@@ -2,6 +2,7 @@
 	import StatusBadge from './StatusBadge.svelte';
 	import FachChip from './FachChip.svelte';
 	import { goto } from '$app/navigation';
+	import { store } from '../store.svelte';
 	import type { Antritt, Fach, Kandidat, Kommissionsmitglied } from '../types';
 	
 	let {
@@ -21,12 +22,7 @@
 	} = $props();
 	
 	// Determine status based on time values
-	let status = $derived.by((): 'waiting' | 'prep' | 'exam' | 'done' => {
-		if (antritt.ende) return 'done';
-		if (antritt.beginn) return 'exam';
-		if (antritt.startVB) return 'prep';
-		return 'waiting';
-	});
+	let status = $derived(store.getExamState(antritt));
 	
 	// Format time or show dash
 	function formatTime(time: string | null): string {
