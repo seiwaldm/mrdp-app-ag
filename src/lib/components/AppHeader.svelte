@@ -2,14 +2,29 @@
 	let {
 		showBackButton = false,
 		title = 'MRDP',
-		subtitle = ''
+		subtitle = '',
+		availableDates = [],
+		selectedDate = $bindable(null)
 	}: {
 		showBackButton?: boolean;
 		title?: string;
 		subtitle?: string;
+		availableDates?: string[];
+		selectedDate?: string | null;
 	} = $props();
 
 	import ThemeToggle from './ThemeToggle.svelte';
+
+	function formatDate(dateStr: string) {
+		if (!dateStr) return '';
+		const d = new Date(dateStr);
+		return d.toLocaleDateString('de-DE', { 
+			weekday: 'long', 
+			day: '2-digit', 
+			month: 'long', 
+			year: 'numeric' 
+		});
+	}
 </script>
 
 <header class="app-header">
@@ -25,9 +40,29 @@
 			{/if}
 		</div>
 		
-		{#if subtitle}
+		{#if subtitle || availableDates.length > 0}
 			<div class="header-center">
-				<span class="subtitle">{subtitle}</span>
+				{#if availableDates.length > 1}
+					<div class="date-selector-wrapper">
+						<select 
+							bind:value={selectedDate} 
+							class="date-select font-display"
+						>
+							{#each availableDates as date}
+								<option value={date}>{formatDate(date)}</option>
+							{/each}
+						</select>
+						<span class="select-arrow">▾</span>
+					</div>
+				{:else if availableDates.length === 1}
+					<span class="date-text font-display">{formatDate(availableDates[0])}</span>
+				{/if}
+				
+				{#if subtitle}
+					<div class="subtitle-container">
+						<span class="subtitle">{subtitle}</span>
+					</div>
+				{/if}
 			</div>
 		{/if}
 		
@@ -83,8 +118,8 @@
 	}
 	
 	.app-name {
-		font-size: 1.25rem;
-		font-weight: 400;
+		font-size: 1.5rem;
+		font-weight: 600;
 		color: var(--color-text-primary);
 		letter-spacing: 0.05em;
 	}
@@ -108,11 +143,55 @@
 	.header-center {
 		flex: 2;
 		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
 	}
 	
 	.subtitle {
 		font-size: 0.875rem;
+		font-weight: 500;
 		color: var(--color-text-secondary);
+	}
+
+	.date-text {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+	}
+
+	.date-selector-wrapper {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.date-select {
+		appearance: none;
+		background: transparent;
+		border: 1px solid transparent;
+		color: var(--color-text-primary);
+		font-size: 1.5rem;
+		font-weight: 600;
+		padding: 0.25rem 2rem 0.25rem 0.75rem;
+		border-radius: var(--radius-md);
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.date-select:hover {
+		background-color: var(--color-bg-elevated);
+		border-color: var(--color-border);
+	}
+
+	.select-arrow {
+		position: absolute;
+		right: 0.75rem;
+		pointer-events: none;
+		font-size: 1rem;
+		color: var(--color-text-muted);
 	}
 	
 	.header-right {

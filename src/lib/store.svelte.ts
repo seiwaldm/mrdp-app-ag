@@ -11,6 +11,7 @@ class MrdpStore {
 	loading = $state(true);
 	error = $state<string | null>(null);
 	now = $state<Date>(new Date());
+	selectedDate = $state<string | null>(null);
 
 	// Helper to format ISO to YYYY-MM-DDTHH:mm for datetime-local input
 	private formatToDateTimeLocal(iso: string | null): string | null {
@@ -99,6 +100,13 @@ class MrdpStore {
 			console.error('Failed to load data from Supabase', e);
 			this.error = e.message || 'Unknown error';
 		} finally {
+			// Initialize selectedDate if not set
+			if (!this.selectedDate && this.antritte.length > 0) {
+				const dates = [...new Set(this.antritte.map(a => a.startVB?.split('T')[0]))].filter(Boolean).sort();
+				if (dates.length > 0) {
+					this.selectedDate = dates[0] as string;
+				}
+			}
 			this.loading = false;
 		}
 	}

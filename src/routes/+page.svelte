@@ -3,24 +3,53 @@
 	import CandidateRow from '$lib/components/CandidateRow.svelte';
 	import { store } from '$lib/store.svelte';
 	
-	// Prepare enriched data for each antritt based on the global store
-	let enrichedAntritte = $derived(
-		store.antritte.map((antritt) => ({
-			antritt,
-			kandidat: store.getKandidat(antritt.kandidatId)!,
-			fach: store.getFach(antritt.fachId)!,
-			pruefer: store.getKommissionsmitglied(antritt.prueferId!)!,
-			beisitz: store.getKommissionsmitglied(antritt.beisitzId!)!,
-			kv: store.getKommissionsmitglied(antritt.kvId!)!
-		}))
+	// Local state for the selected date to ensure reactivity
+	let localSelectedDate = $state<string | null>(null);
+
+	// Sync local state with store on init
+	$effect(() => {
+		if (store.selectedDate && !localSelectedDate) {
+			localSelectedDate = store.selectedDate;
+		}
+	});
+
+	// Keep store in sync with local state
+	$effect(() => {
+		store.selectedDate = localSelectedDate;
+	});
+
+	// Extract unique available dates from the store
+	let availableDates = $derived(
+		[...new Set(store.antritte.map(a => a.startVB?.split('T')[0]))]
+			.filter(Boolean)
+			.sort() as string[]
 	);
-	
-	const examDate = 'Dienstag, 15. Juni 2026';
+
+	// Filter and enrich data for each antritt based on the global store
+	let filteredAntritte = $derived(
+		store.antritte
+			.filter(a => !localSelectedDate || (a.startVB && a.startVB.startsWith(localSelectedDate)))
+			.map((antritt) => ({
+				antritt,
+				kandidat: store.getKandidat(antritt.kandidatId)!,
+				fach: store.getFach(antritt.fachId)!,
+				pruefer: antritt.prueferId ? store.getKommissionsmitglied(antritt.prueferId) : undefined,
+				beisitz: antritt.beisitzId ? store.getKommissionsmitglied(antritt.beisitzId) : undefined,
+				kv: antritt.kvId ? store.getKommissionsmitglied(antritt.kvId) : undefined
+			}))
+			.sort((a, b) => {
+				const timeA = a.antritt.startVB || '9999-99-99T99:99';
+				const timeB = b.antritt.startVB || '9999-99-99T99:99';
+				return timeA.localeCompare(timeB);
+			})
+	);
 </script>
 
 <div class="page-container">
 	<AppHeader 
-		subtitle="Prüfungstag: {examDate} • {store.antritte.length} Kandidat/innen"
+		availableDates={availableDates}
+		bind:selectedDate={localSelectedDate}
+		subtitle="{filteredAntritte.length} Kandidat/innen"
 	/>
 	
 	<main class="main-content">
@@ -40,18 +69,21 @@
 						<th class="col-time">Ende</th>
 					</tr>
 				</thead>
-				<tbody>
-					{#each enrichedAntritte as item, i (item.antritt.id)}
-						<CandidateRow 
-							antritt={item.antritt}
-							kandidat={item.kandidat}
-							fach={item.fach}
-							pruefer={item.pruefer}
-							beisitz={item.beisitz}
-							kv={item.kv}
-						/>
-					{/each}
-				</tbody>
+				{#key localSelectedDate}
+					<tbody>
+						{#each filteredAntritte as item, i (item.antritt.id)}
+							<CandidateRow 
+								antritt={item.antritt}
+								kandidat={item.kandidat}
+								fach={item.fach}
+								pruefer={item.pruefer}
+								beisitz={item.beisitz}
+								kv={item.kv}
+								displayNumber={i + 1}
+							/>
+						{/each}
+					</tbody>
+				{/key}
 			</table>
 		</div>
 	</main>

@@ -11,14 +11,16 @@
 		fach,
 		pruefer,
 		beisitz,
-		kv
+		kv,
+		displayNumber
 	}: {
 		antritt: Antritt;
 		kandidat: Kandidat;
 		fach: Fach;
-		pruefer: Kommissionsmitglied;
-		beisitz: Kommissionsmitglied;
-		kv: Kommissionsmitglied;
+		pruefer?: Kommissionsmitglied;
+		beisitz?: Kommissionsmitglied;
+		kv?: Kommissionsmitglied;
+		displayNumber: number;
 	} = $props();
 	
 	// Determine status based on time values
@@ -35,7 +37,7 @@
 </script>
 
 <tr class="candidate-row status-{status}" onclick={handleRowClick}>
-	<td class="col-nr font-mono">{antritt.id}</td>
+	<td class="col-nr font-mono">{displayNumber}</td>
 	<td class="col-status">
 		<StatusBadge {status} />
 	</td>
@@ -47,9 +49,27 @@
 	<td class="col-fach">
 		<FachChip kurzform={fach.kurzform} />
 	</td>
-	<td class="col-person">{kv.nachname} {kv.vorname[0]}.</td>
-	<td class="col-person">{pruefer.nachname} {pruefer.vorname[0]}.</td>
-	<td class="col-person">{beisitz.nachname} {beisitz.vorname[0]}.</td>
+	<td class="col-person">
+		{#if kv}
+			{kv.nachname} {kv.vorname[0]}.
+		{:else}
+			—
+		{/if}
+	</td>
+	<td class="col-person">
+		{#if pruefer}
+			{pruefer.nachname} {pruefer.vorname[0]}.
+		{:else}
+			—
+		{/if}
+	</td>
+	<td class="col-person">
+		{#if beisitz}
+			{beisitz.nachname} {beisitz.vorname[0]}.
+		{:else}
+			—
+		{/if}
+	</td>
 	<td class="col-time font-mono" class:filled={antritt.startVB}>{formatTime(antritt.startVB)}</td>
 	<td class="col-time font-mono" class:filled={antritt.beginn}>{formatTime(antritt.beginn)}</td>
 	<td class="col-time font-mono" class:filled={antritt.ende}>{formatTime(antritt.ende)}</td>
