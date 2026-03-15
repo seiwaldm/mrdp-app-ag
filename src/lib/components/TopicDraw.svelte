@@ -40,9 +40,9 @@
 		onSelect(topicId);
 	}
 	
-	function confirmRedraw() {
+	function confirmReset() {
 		if (confirm('Möchten Sie die Themen wirklich erneut ziehen? Die aktuelle Auswahl wird gelöscht.')) {
-			drawTopics();
+			onDraw(null, null);
 		}
 	}
 </script>
@@ -54,7 +54,7 @@
 		<button type="button" class="btn-draw" onclick={drawTopics}>
 			🎲 Zwei Themen ziehen
 		</button>
-	{:else}
+{:else}
 		<div class="drawn-topics">
 			<div class="topic-row">
 				<span class="topic-label">Thema 1:</span>
@@ -90,7 +90,7 @@
 				</div>
 			{/if}
 			
-			<button type="button" class="btn-redraw" onclick={confirmRedraw}>
+			<button type="button" class="btn-redraw" onclick={confirmReset}>
 				Erneut ziehen
 			</button>
 		</div>

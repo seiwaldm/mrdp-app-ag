@@ -30,9 +30,9 @@ export interface Antritt {
 	id: number | string;
 	kandidatId: number | string;
 	fachId: number | string;
-	startVB: string | null; // e.g. "09:00"
-	beginn: string | null;
-	ende: string | null;
+	startVB: string | null; // ISO timestamp or HH:mm (UI)
+	beginn: string | null; // ISO timestamp or HH:mm (UI)
+	ende: string | null; // ISO timestamp or HH:mm (UI)
 	thema1Id: number | string | null;
 	thema2Id: number | string | null;
 	themenwahl?: number | string | null;

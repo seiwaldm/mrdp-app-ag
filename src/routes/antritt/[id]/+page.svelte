@@ -35,8 +35,8 @@
 	function handleDrawTopics(t1: any, t2: any) {
 		if (antritt) {
 			store.updateAntritt(antrittId, {
-				thema1Id: t1.id,
-				thema2Id: t2.id,
+				thema1Id: t1?.id || null,
+				thema2Id: t2?.id || null,
 				themenwahl: null
 			});
 		}

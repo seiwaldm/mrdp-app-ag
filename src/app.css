@@ -17,10 +17,10 @@
   --color-accent-dim: #7a6920;
 
   /* === Exam state colors === */
-  --color-state-waiting: #3b82f6;
-  --color-state-prep: #f59e0b;
-  --color-state-exam: #ef4444;
-  --color-state-done: #22c55e;
+  --color-state-waiting: #3b82f6; /* Blue */
+  --color-state-prep: #ef4444;    /* Red */
+  --color-state-exam: #e8c547;    /* Yellow */
+  --color-state-done: #22c55e;    /* Green */
 
   /* === Typography === */
   --font-sans: 'DM Sans', system-ui, sans-serif;

@@ -35,6 +35,7 @@
 						<th class="col-person">KV/Stv.</th>
 						<th class="col-person">Prüfer/in</th>
 						<th class="col-person">Beisitz</th>
+						<th class="col-time">VB</th>
 						<th class="col-time">Beginn</th>
 						<th class="col-time">Ende</th>
 					</tr>

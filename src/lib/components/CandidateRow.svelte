@@ -55,6 +55,7 @@
 	<td class="col-person">{pruefer.nachname} {pruefer.vorname[0]}.</td>
 	<td class="col-person">{beisitz.nachname} {beisitz.vorname[0]}.</td>
 	<td class="col-time font-mono" class:filled={antritt.startVB}>{formatTime(antritt.startVB)}</td>
+	<td class="col-time font-mono" class:filled={antritt.beginn}>{formatTime(antritt.beginn)}</td>
 	<td class="col-time font-mono" class:filled={antritt.ende}>{formatTime(antritt.ende)}</td>
 </tr>
 
@@ -67,6 +68,7 @@
 	
 	.candidate-row:hover {
 		background-color: var(--color-bg-elevated);
+		filter: brightness(1.1);
 	}
 	
 	/* Status border stripe */
@@ -84,6 +86,22 @@
 	
 	.candidate-row.status-done {
 		border-left: 4px solid var(--color-state-done);
+	}
+	
+	.candidate-row.status-waiting {
+		background-color: rgba(59, 130, 246, 0.05);
+	}
+	
+	.candidate-row.status-prep {
+		background-color: rgba(239, 68, 68, 0.05);
+	}
+	
+	.candidate-row.status-exam {
+		background-color: rgba(232, 197, 71, 0.05);
+	}
+	
+	.candidate-row.status-done {
+		background-color: rgba(34, 197, 94, 0.05);
 	}
 	
 	td {
