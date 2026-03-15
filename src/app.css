@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+
+@theme {
+  /* === Background colors === */
+  --color-bg-base: #0f1117;
+  --color-bg-surface: #181c27;
+  --color-bg-elevated: #222840;
+  --color-border: #2e3356;
+
+  /* === Text colors === */
+  --color-text-primary: #f0f2f7;
+  --color-text-secondary: #8b93b0;
+  --color-text-muted: #525a78;
+
+  /* === Accent colors === */
+  --color-accent: #e8c547;
+  --color-accent-dim: #7a6920;
+
+  /* === Exam state colors === */
+  --color-state-waiting: #3b82f6;
+  --color-state-prep: #f59e0b;
+  --color-state-exam: #ef4444;
+  --color-state-done: #22c55e;
+
+  /* === Typography === */
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  /* === Spacing scale (4px base) === */
+  --spacing-1: 0.25rem;  /* 4px */
+  --spacing-2: 0.5rem;   /* 8px */
+  --spacing-3: 0.75rem;  /* 12px */
+  --spacing-4: 1rem;     /* 16px */
+  --spacing-6: 1.5rem;   /* 24px */
+  --spacing-8: 2rem;     /* 32px */
+  --spacing-12: 3rem;    /* 48px */
+  --spacing-16: 4rem;    /* 64px */
+
+  /* === Border radius === */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+}
+
+/* === Base styles === */
+html {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--color-bg-base);
+}
+
+/* === Typography utilities === */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
