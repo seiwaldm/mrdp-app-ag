@@ -11,36 +11,41 @@ class MrdpStore {
 	loading = $state(true);
 	error = $state<string | null>(null);
 	now = $state<Date>(new Date());
-	// Map of antrittId -> { startVB: fullISO, beginn: fullISO, ende: fullISO }
-	private _fullDates = new Map<string | number, { startVB: string | null, beginn: string | null, ende: string | null }>();
 
-	private formatTime(iso: string | null): string | null {
+	// Helper to format ISO to YYYY-MM-DDTHH:mm for datetime-local input
+	private formatToDateTimeLocal(iso: string | null): string | null {
 		if (!iso) return null;
-		try {
-			// Supabase returns timestamptz as ISO string. 
-			// We want HH:mm in local time (or just the time part if it's stored correctly)
-			const date = new Date(iso);
-			if (isNaN(date.getTime())) return null;
-			return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-		} catch (e) {
-			return null;
-		}
+		const date = new Date(iso);
+		if (isNaN(date.getTime())) return null;
+		
+		const pad = (n: number) => String(n).padStart(2, '0');
+		const y = date.getFullYear();
+		const m = pad(date.getMonth() + 1);
+		const d = pad(date.getDate());
+		const h = pad(date.getHours());
+		const min = pad(date.getMinutes());
+		
+		return `${y}-${m}-${d}T${h}:${min}`;
 	}
 
-	private mergeTimeIntoISO(existingISO: string | null, newTime: string | null): string | null {
-		if (!newTime) return null;
-		
-		// newTime is "HH:mm"
-		const [hours, minutes] = newTime.split(':').map(Number);
-		const date = existingISO ? new Date(existingISO) : new Date();
-		
-		date.setHours(hours, minutes, 0, 0);
-		return date.toISOString();
+	// Helper to format any date/time string to HH:mm for table display
+	formatToTimeOnly(iso: string | null): string {
+		if (!iso) return '—';
+		try {
+			const date = new Date(iso);
+			if (isNaN(date.getTime())) return '—';
+			return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false });
+		} catch {
+			return '—';
+		}
 	}
 
 	async init() {
 		this.loading = true;
 		this.error = null;
+
+		// Load theme from localStorage
+		this.loadFromLocalStorage();
 
 		// Update 'now' every minute
 		if (typeof window !== 'undefined') {
@@ -73,37 +78,38 @@ class MrdpStore {
 			})) as Themengebiet[];
 			this.kommission = (commission || []) as Kommissionsmitglied[];
 			
-			this.antritte = (entries || []).map((a: any) => {
-				// Store full dates for later updates
-				this._fullDates.set(a.id, {
-					startVB: a.start_vb,
-					beginn: a.beginn,
-					ende: a.ende
-				});
-
-				return {
-					id: a.id,
-					kandidatId: a.kandidat_id,
-					fachId: a.fach_id,
-					startVB: this.formatTime(a.start_vb),
-					beginn: this.formatTime(a.beginn),
-					ende: this.formatTime(a.ende),
-					thema1Id: a.thema1_id,
-					thema2Id: a.thema2_id,
-					themenwahl: a.themenwahl,
-					prueferId: a.pruefer_id,
-					beisitzId: a.beisitz_id,
-					kvId: a.kv_id,
-					aufgabeNr: a.aufgabe_nr,
-					pruefungsnote: a.pruefungsnote,
-					jahresnote: a.jahresnote
-				};
-			}) as Antritt[];
+			this.antritte = (entries || []).map((a: any) => ({
+				id: a.id,
+				kandidatId: a.kandidat_id,
+				fachId: a.fach_id,
+				startVB: this.formatToDateTimeLocal(a.start_vb),
+				beginn: this.formatToDateTimeLocal(a.beginn),
+				ende: this.formatToDateTimeLocal(a.ende),
+				thema1Id: a.thema1_id,
+				thema2Id: a.thema2_id,
+				themenwahl: a.themenwahl,
+				prueferId: a.pruefer_id,
+				beisitzId: a.beisitz_id,
+				kvId: a.kv_id,
+				aufgabeNr: a.aufgabe_nr,
+				pruefungsnote: a.pruefungsnote,
+				jahresnote: a.jahresnote
+			})) as Antritt[];
 		} catch (e: any) {
 			console.error('Failed to load data from Supabase', e);
 			this.error = e.message || 'Unknown error';
 		} finally {
 			this.loading = false;
+		}
+	}
+
+	private loadFromLocalStorage() {
+		if (typeof window !== 'undefined') {
+			const savedTheme = localStorage.getItem('mrdp_theme');
+			if (savedTheme === 'light' || savedTheme === 'dark') {
+				this.theme = savedTheme;
+			}
+			this.applyTheme();
 		}
 	}
 
@@ -149,14 +155,10 @@ class MrdpStore {
 		return this.kommission.find((m) => String(m.id) === String(id));
 	}
 
-	private isTimePassed(time: string | null): boolean {
-		if (!time) return false;
-		
-		const [hours, minutes] = time.split(':').map(Number);
-		const timeDate = new Date(this.now);
-		timeDate.setHours(hours, minutes, 0, 0);
-		
-		return this.now >= timeDate;
+	private isTimePassed(iso: string | null): boolean {
+		if (!iso) return false;
+		const date = new Date(iso);
+		return !isNaN(date.getTime()) && this.now >= date;
 	}
 
 	getExamState(antritt: Antritt): ExamState {
@@ -166,31 +168,53 @@ class MrdpStore {
 		return 'waiting';
 	}
 
+	private validateTimeSequence(updates: Partial<Antritt>, existing: Antritt): { valid: boolean; error?: string } {
+		const start = 'startVB' in updates ? updates.startVB : existing.startVB;
+		const begin = 'beginn' in updates ? updates.beginn : existing.beginn;
+		const end = 'ende' in updates ? updates.ende : existing.ende;
+
+		const dStart = start ? new Date(start) : null;
+		const dBegin = begin ? new Date(begin) : null;
+		const dEnd = end ? new Date(end) : null;
+
+		if (dStart && dBegin && dStart >= dBegin) {
+			return { valid: false, error: 'Vorbereitungsbeginn muss vor dem Prüfungsbeginn liegen.' };
+		}
+		if (dBegin && dEnd && dBegin >= dEnd) {
+			return { valid: false, error: 'Prüfungsbeginn muss vor dem Prüfungsende liegen.' };
+		}
+		if (dStart && dEnd && dStart >= dEnd) {
+			return { valid: false, error: 'Vorbereitungsbeginn muss vor dem Prüfungsende liegen.' };
+		}
+		return { valid: true };
+	}
+
 	async updateAntritt(id: string | number, updates: Partial<Antritt>) {
 		const index = this.antritte.findIndex((a) => String(a.id) === String(id));
 		if (index !== -1) {
-			const existingRaw = this._fullDates.get(id);
+			const currentAntritt = this.antritte[index];
 			
-			// Update local state (UI formatted)
+			// Validate time sequence
+			if ('startVB' in updates || 'beginn' in updates || 'ende' in updates) {
+				const validation = this.validateTimeSequence(updates, currentAntritt);
+				if (!validation.valid) {
+					this.error = validation.error || 'Ungültige Zeitabfolge.';
+					return;
+				}
+			}
+
+			// Update local state
 			this.antritte[index] = { ...this.antritte[index], ...updates };
+			this.error = null; 
 
 			// Map back to snake_case for Supabase
 			const dbUpdates: any = {};
 			if ('kandidatId' in updates) dbUpdates.kandidat_id = updates.kandidatId;
 			if ('fachId' in updates) dbUpdates.fach_id = updates.fachId;
 			
-			if ('startVB' in updates) {
-				dbUpdates.start_vb = this.mergeTimeIntoISO(existingRaw?.startVB || null, updates.startVB || null);
-				if (existingRaw) existingRaw.startVB = dbUpdates.start_vb;
-			}
-			if ('beginn' in updates) {
-				dbUpdates.beginn = this.mergeTimeIntoISO(existingRaw?.beginn || null, updates.beginn || null);
-				if (existingRaw) existingRaw.beginn = dbUpdates.beginn;
-			}
-			if ('ende' in updates) {
-				dbUpdates.ende = this.mergeTimeIntoISO(existingRaw?.ende || null, updates.ende || null);
-				if (existingRaw) existingRaw.ende = dbUpdates.ende;
-			}
+			if ('startVB' in updates) dbUpdates.start_vb = updates.startVB ? new Date(updates.startVB).toISOString() : null;
+			if ('beginn' in updates) dbUpdates.beginn = updates.beginn ? new Date(updates.beginn).toISOString() : null;
+			if ('ende' in updates) dbUpdates.ende = updates.ende ? new Date(updates.ende).toISOString() : null;
 			
 			if ('thema1Id' in updates) dbUpdates.thema1_id = updates.thema1Id;
 			if ('thema2Id' in updates) dbUpdates.thema2_id = updates.thema2Id;
@@ -210,6 +234,8 @@ class MrdpStore {
 			if (error) {
 				console.error('Failed to update antritt in Supabase', error);
 				this.error = error.message;
+				// Rollback local state on DB error? 
+				// For now just keeping the error visible.
 			}
 		}
 	}

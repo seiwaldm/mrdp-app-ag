@@ -26,7 +26,7 @@
 	
 	// Format time or show dash
 	function formatTime(time: string | null): string {
-		return time || '—';
+		return store.formatToTimeOnly(time);
 	}
 	
 	function handleRowClick() {

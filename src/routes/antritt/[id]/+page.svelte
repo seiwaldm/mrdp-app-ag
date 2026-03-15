@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition';
 	import { page } from '$app/stores';
 	import { store } from '$lib/store.svelte';
 	import AppHeader from '$lib/components/AppHeader.svelte';
@@ -80,6 +81,14 @@
 </script>
 
 <div class="page-container">
+	{#if store.error}
+		<div class="error-toast" transition:fade>
+			<span class="error-icon">⚠️</span>
+			<span class="error-message">{store.error}</span>
+			<button class="close-error" onclick={() => store.error = null}>&times;</button>
+		</div>
+	{/if}
+
 	{#if isValidTarget}
 		<AppHeader showBackButton={true} title={kandidat?.nachname + ' ' + kandidat?.vorname} subtitle="{fach?.kurzform} · Klasse {kandidat?.klasse}" />
 		
@@ -260,6 +269,57 @@
 	.page-container {
 		min-height: 100vh;
 		background-color: var(--color-bg-base);
+		position: relative;
+	}
+
+	.error-toast {
+		position: fixed;
+		top: 5rem;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 100;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.75rem 1.25rem;
+		background-color: #fffbeb;
+		border: 1px solid #fcd34d;
+		border-radius: var(--radius-md);
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+		color: #92400e;
+		min-width: 320px;
+	}
+
+	:root:not(.light) .error-toast {
+		background-color: #451a03;
+		border-color: #92400e;
+		color: #fef3c7;
+	}
+
+	.error-icon {
+		font-size: 1.25rem;
+	}
+
+	.error-message {
+		flex: 1;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.close-error {
+		background: none;
+		border: none;
+		font-size: 1.5rem;
+		line-height: 1;
+		cursor: pointer;
+		color: inherit;
+		opacity: 0.5;
+		transition: opacity 150ms;
+		padding: 0 0.25rem;
+	}
+
+	.close-error:hover {
+		opacity: 1;
 	}
 	
 	.detail-content {

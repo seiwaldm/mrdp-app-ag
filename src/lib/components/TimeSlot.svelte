@@ -9,33 +9,75 @@
 		onChange: (time: string) => void;
 	} = $props();
 	
+	// Parse the value (ISO) into date and time parts
+	let datePart = $derived(value ? value.split('T')[0] : '');
+	let timePart = $derived(value && value.includes('T') ? value.split('T')[1].substring(0, 5) : '');
+	
 	function setCurrentTime() {
 		const now = new Date();
-		const hours = String(now.getHours()).padStart(2, '0');
-		const minutes = String(now.getMinutes()).padStart(2, '0');
-		const timeString = `${hours}:${minutes}`;
-		onChange(timeString);
+		const pad = (n: number) => String(n).padStart(2, '0');
+		const y = now.getFullYear();
+		const m = pad(now.getMonth() + 1);
+		const d = pad(now.getDate());
+		const h = pad(now.getHours());
+		const min = pad(now.getMinutes());
+		
+		const dateTimeString = `${y}-${m}-${d}T${h}:${min}`;
+		onChange(dateTimeString);
 	}
 	
-	function handleInput(event: Event) {
+	function handleDateChange(event: Event) {
 		const input = event.target as HTMLInputElement;
-		onChange(input.value);
+		const newDate = input.value;
+		if (!newDate) return;
+		
+		const time = timePart || '00:00';
+		onChange(`${newDate}T${time}`);
+	}
+
+	function handleTimeChange(event: Event) {
+		const input = event.target as HTMLInputElement;
+		let newTime = input.value;
+		
+		// Basic validation/formatting for HH:mm
+		if (newTime.length === 2 && !newTime.includes(':')) {
+			newTime += ':';
+		}
+		
+		if (newTime.length === 5) {
+			const [h, m] = newTime.split(':').map(Number);
+			if (h >= 0 && h < 24 && m >= 0 && m < 60) {
+				const date = datePart || new Date().toISOString().split('T')[0];
+				onChange(`${date}T${newTime}`);
+			}
+		}
 	}
 </script>
 
 <div class="time-slot">
 	<span class="time-label">{label}</span>
 	<div class="time-controls">
-		<button type="button" class="btn-now" onclick={setCurrentTime} title="Aktuelle Zeit setzen">
+		<button type="button" class="btn-now" onclick={setCurrentTime} title="Jetzt setzen">
 			⏱
 		</button>
-		<input 
-			type="time" 
-			class="time-input font-mono" 
-			value={value || ''} 
-			oninput={handleInput}
-			class:filled={value}
-		/>
+		<div class="input-group">
+			<input 
+				type="date" 
+				class="date-input font-mono" 
+				value={datePart} 
+				oninput={handleDateChange}
+				class:filled={datePart}
+			/>
+			<input 
+				type="text" 
+				class="time-input-forced font-mono" 
+				value={timePart} 
+				oninput={handleTimeChange}
+				placeholder="HH:mm"
+				maxlength="5"
+				class:filled={timePart}
+			/>
+		</div>
 	</div>
 </div>
 
@@ -60,6 +102,16 @@
 		gap: 0.5rem;
 		flex: 1;
 	}
+
+	.input-group {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		background-color: var(--color-bg-elevated);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		padding: 0.25rem;
+	}
 	
 	.btn-now {
 		display: flex;
@@ -81,25 +133,33 @@
 		color: var(--color-bg-base);
 	}
 	
-	.time-input {
-		flex: 0 0 auto;
-		width: 6rem;
-		padding: 0.5rem;
-		background-color: var(--color-bg-elevated);
+	.date-input, .time-input-forced {
+		background: none;
+		border: none;
 		color: var(--color-text-muted);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-sm);
 		font-size: 0.875rem;
-		transition: all 150ms;
+		padding: 0.25rem;
+	}
+
+	.date-input {
+		width: 8rem;
+		border-right: 1px solid var(--color-border);
+	}
+
+	.time-input-forced {
+		width: 4rem;
+		text-align: center;
 	}
 	
-	.time-input.filled {
+	.date-input.filled, .time-input-forced.filled {
 		color: var(--color-accent);
-		border-color: var(--color-accent-dim);
 	}
 	
-	.time-input:focus {
+	input:focus {
 		outline: none;
+	}
+
+	.input-group:focus-within {
 		border-color: var(--color-accent);
 	}
 </style>
