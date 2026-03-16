@@ -2,6 +2,7 @@
 	import StatusBadge from './StatusBadge.svelte';
 	import FachChip from './FachChip.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { store } from '../store.svelte';
 	import type { Antritt, Fach, Kandidat, Kommissionsmitglied } from '../types';
 	
@@ -12,16 +13,24 @@
 		pruefer,
 		beisitz,
 		kv,
-		displayNumber
+		displayNumber,
+		themengebiet
 	}: {
 		antritt: Antritt;
 		kandidat: Kandidat;
 		fach: Fach;
-		pruefer?: Kommissionsmitglied;
-		beisitz?: Kommissionsmitglied;
-		kv?: Kommissionsmitglied;
+		pruefer: Kommissionsmitglied | undefined;
+		beisitz: Kommissionsmitglied | undefined;
+		kv: Kommissionsmitglied | undefined;
 		displayNumber: number;
+		themengebiet?: string | null;
 	} = $props();
+
+	// Helper to format person names
+	function formatPerson(person: Kommissionsmitglied | undefined): string {
+		if (!person) return '—';
+		return `${person.nachname} ${person.vorname[0]}.`;
+	}
 	
 	// Determine status based on time values
 	let status = $derived(store.getExamState(antritt));
@@ -32,7 +41,7 @@
 	}
 	
 	function handleRowClick() {
-		goto(`/antritt/${antritt.id}`);
+		goto(`${base}/antritt/${antritt.id}`);
 	}
 </script>
 
@@ -49,27 +58,10 @@
 	<td class="col-fach">
 		<FachChip kurzform={fach.kurzform} />
 	</td>
-	<td class="col-person">
-		{#if kv}
-			{kv.nachname} {kv.vorname[0]}.
-		{:else}
-			—
-		{/if}
-	</td>
-	<td class="col-person">
-		{#if pruefer}
-			{pruefer.nachname} {pruefer.vorname[0]}.
-		{:else}
-			—
-		{/if}
-	</td>
-	<td class="col-person">
-		{#if beisitz}
-			{beisitz.nachname} {beisitz.vorname[0]}.
-		{:else}
-			—
-		{/if}
-	</td>
+	<td class="col-topic">{themengebiet || '—'}</td>
+	<td class="col-person group-start">{formatPerson(kv)}</td>
+	<td class="col-person">{formatPerson(pruefer)}</td>
+	<td class="col-person group-end">{formatPerson(beisitz)}</td>
 	<td class="col-time font-mono" class:filled={antritt.startVB}>{formatTime(antritt.startVB)}</td>
 	<td class="col-time font-mono" class:filled={antritt.beginn}>{formatTime(antritt.beginn)}</td>
 	<td class="col-time font-mono" class:filled={antritt.ende}>{formatTime(antritt.ende)}</td>
@@ -165,6 +157,20 @@
 		text-align: right;
 		color: var(--color-text-muted);
 		font-size: 0.875rem;
+	}
+
+	.col-topic {
+		font-style: italic;
+		color: var(--color-text-secondary);
+		font-size: 0.875rem;
+	}
+
+	.group-start {
+		padding-left: 2rem !important;
+	}
+
+	.group-end {
+		padding-right: 2rem !important;
 	}
 	
 	.col-time.filled {

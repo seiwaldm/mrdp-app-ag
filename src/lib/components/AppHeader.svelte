@@ -14,6 +14,7 @@
 	} = $props();
 
 	import ThemeToggle from './ThemeToggle.svelte';
+	import { base } from '$app/paths';
 
 	function formatDate(dateStr: string) {
 		if (!dateStr) return '';
@@ -31,7 +32,7 @@
 	<div class="header-content">
 		<div class="header-left">
 			{#if showBackButton}
-				<a href="/" class="back-button">← Zurück</a>
+				<a href="{base}/" class="back-button">← Zurück</a>
 			{:else}
 				<div class="app-title">
 					<span class="app-mark">⊕</span>

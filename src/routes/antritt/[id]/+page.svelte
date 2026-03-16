@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/stores';
+	import { base } from '$app/paths';
 	import { store } from '$lib/store.svelte';
 	import AppHeader from '$lib/components/AppHeader.svelte';
 	import FachChip from '$lib/components/FachChip.svelte';
@@ -260,7 +261,7 @@
 	{:else}
 		<div class="not-found">
 			<h2>Antritt nicht gefunden</h2>
-			<a href="/">Zurück zur Übersicht</a>
+			<a href="{base}/">Zurück zur Übersicht</a>
 		</div>
 	{/if}
 </div>

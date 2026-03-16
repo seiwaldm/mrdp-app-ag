@@ -35,7 +35,10 @@
 				fach: store.getFach(antritt.fachId)!,
 				pruefer: antritt.prueferId ? store.getKommissionsmitglied(antritt.prueferId) : undefined,
 				beisitz: antritt.beisitzId ? store.getKommissionsmitglied(antritt.beisitzId) : undefined,
-				kv: antritt.kvId ? store.getKommissionsmitglied(antritt.kvId) : undefined
+				kv: antritt.kvId ? store.getKommissionsmitglied(antritt.kvId) : undefined,
+				themengebiet: antritt.themenwahl 
+					? store.themengebiete.find(t => String(t.id) === String(antritt.themenwahl))?.bezeichnung 
+					: null
 			}))
 			.sort((a, b) => {
 				const timeA = a.antritt.startVB || '9999-99-99T99:99';
@@ -56,17 +59,21 @@
 		<div class="table-container">
 			<table class="candidates-table">
 				<thead>
-					<tr>
-						<th class="col-nr">Nr.</th>
-						<th class="col-status"></th>
-						<th class="col-name">Name</th>
-						<th class="col-fach">Fach</th>
-						<th class="col-person">KV/Stv.</th>
+					<tr class="header-group-row">
+						<th rowspan="2" class="col-nr">Nr.</th>
+						<th rowspan="2" class="col-status"></th>
+						<th rowspan="2" class="col-name">Name</th>
+						<th rowspan="2" class="col-fach">Fach</th>
+						<th rowspan="2" class="col-topic">Thema</th>
+						<th colspan="3" class="col-group-header">Kommission</th>
+						<th rowspan="2" class="col-time">VB</th>
+						<th rowspan="2" class="col-time">Beginn</th>
+						<th rowspan="2" class="col-time">Ende</th>
+					</tr>
+					<tr class="header-sub-row">
+						<th class="col-person group-start">KV/Stv.</th>
 						<th class="col-person">Prüfer/in</th>
-						<th class="col-person">Beisitz</th>
-						<th class="col-time">VB</th>
-						<th class="col-time">Beginn</th>
-						<th class="col-time">Ende</th>
+						<th class="col-person group-end">Beisitz</th>
 					</tr>
 				</thead>
 				{#key localSelectedDate}
@@ -79,6 +86,7 @@
 								pruefer={item.pruefer}
 								beisitz={item.beisitz}
 								kv={item.kv}
+								themengebiet={item.themengebiet}
 								displayNumber={i + 1}
 							/>
 						{/each}
@@ -134,6 +142,28 @@
 	
 	th.col-time {
 		text-align: right;
+	}
+
+	.col-topic {
+		width: 15rem;
+		font-style: italic;
+	}
+
+	.col-group-header {
+		text-align: center;
+		border-bottom: 1px solid var(--color-border);
+		padding: 0.5rem 1rem;
+		font-size: 0.65rem;
+		letter-spacing: 0.15em;
+		color: var(--color-accent);
+	}
+
+	.group-start {
+		padding-left: 2rem !important;
+	}
+
+	.group-end {
+		padding-right: 2rem !important;
 	}
 	
 	@media (max-width: 640px) {
