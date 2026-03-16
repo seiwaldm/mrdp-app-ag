@@ -83,4 +83,25 @@ describe('TopicDraw.svelte', () => {
 		expect(screen.getByText(/Gewähltes Thema:/i)).toBeDefined();
 		expect(screen.getAllByText('Topic 1')).toHaveLength(2); // One in the list, one in the selection info
 	});
+
+	it('should call onDraw(null, null) when redraw button is clicked and confirmed', async () => {
+		const onDraw = vi.fn();
+		const confirmSpy = vi.spyOn(window, 'confirm').mockImplementation(() => true);
+		
+		render(TopicDraw, {
+			availableTopics: mockTopics,
+			drawnTopic1: mockTopics[0],
+			drawnTopic2: mockTopics[1],
+			onDraw,
+			onSelect: vi.fn()
+		});
+
+		const redrawButton = screen.getByText(/Erneut ziehen/i);
+		await fireEvent.click(redrawButton);
+
+		expect(confirmSpy).toHaveBeenCalled();
+		expect(onDraw).toHaveBeenCalledWith(null, null);
+		
+		confirmSpy.mockRestore();
+	});
 });

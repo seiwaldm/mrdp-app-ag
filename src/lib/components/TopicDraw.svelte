@@ -17,8 +17,8 @@
 		onSelect: (topicId: string | number) => void;
 	} = $props();
 	
-	let hasDrawn = $derived(drawnTopic1 !== null && drawnTopic2 !== null);
-	let canSelect = $derived(hasDrawn && !selectedTopicId);
+	let hasDrawn = $derived(!!drawnTopic1 && !!drawnTopic2);
+	let canSelect = $derived(hasDrawn && selectedTopicId === null);
 	
 	function drawTopics() {
 		if (availableTopics.length < 2) {
