@@ -8,7 +8,7 @@
 		done: { color: 'var(--color-state-done)', label: 'Abgeschlossen' }
 	};
 	
-	const config = statusConfig[status];
+	const config = $derived(statusConfig[status]);
 </script>
 
 <div class="status-badge" style="--status-color: {config.color}">

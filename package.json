@@ -28,6 +28,7 @@
 		"vitest": "^4.1.0"
 	},
 	"dependencies": {
-		"@supabase/supabase-js": "^2.99.1"
+		"@supabase/supabase-js": "^2.99.1",
+		"@sveltejs/adapter-static": "^3.0.10"
 	}
 }
