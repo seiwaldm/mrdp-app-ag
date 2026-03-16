@@ -66,14 +66,15 @@
 						<th rowspan="2" class="col-fach">Fach</th>
 						<th rowspan="2" class="col-topic">Thema</th>
 						<th colspan="3" class="col-group-header">Kommission</th>
-						<th rowspan="2" class="col-time">VB</th>
-						<th rowspan="2" class="col-time">Beginn</th>
-						<th rowspan="2" class="col-time">Ende</th>
+						<th colspan="3" class="col-group-header">Ablauf</th>
 					</tr>
 					<tr class="header-sub-row">
 						<th class="col-person group-start">KV/Stv.</th>
 						<th class="col-person">Prüfer/in</th>
 						<th class="col-person group-end">Beisitz</th>
+						<th class="col-time group-start">StartVB</th>
+						<th class="col-time">Beginn</th>
+						<th class="col-time group-end">Ende</th>
 					</tr>
 				</thead>
 				{#key localSelectedDate}

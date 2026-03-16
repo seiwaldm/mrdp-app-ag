@@ -7,7 +7,7 @@ class MrdpStore {
 	themengebiete = $state<Themengebiet[]>([]);
 	kommission = $state<Kommissionsmitglied[]>([]);
 	antritte = $state<Antritt[]>([]);
-	theme = $state<'light' | 'dark'>('dark');
+	theme = $state<'light' | 'dark'>('light');
 	loading = $state(true);
 	error = $state<string | null>(null);
 	now = $state<Date>(new Date());

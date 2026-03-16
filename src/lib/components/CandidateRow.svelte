@@ -62,9 +62,9 @@
 	<td class="col-person group-start">{formatPerson(kv)}</td>
 	<td class="col-person">{formatPerson(pruefer)}</td>
 	<td class="col-person group-end">{formatPerson(beisitz)}</td>
-	<td class="col-time font-mono" class:filled={antritt.startVB}>{formatTime(antritt.startVB)}</td>
+	<td class="col-time font-mono group-start" class:filled={antritt.startVB}>{formatTime(antritt.startVB)}</td>
 	<td class="col-time font-mono" class:filled={antritt.beginn}>{formatTime(antritt.beginn)}</td>
-	<td class="col-time font-mono" class:filled={antritt.ende}>{formatTime(antritt.ende)}</td>
+	<td class="col-time font-mono group-end" class:filled={antritt.ende}>{formatTime(antritt.ende)}</td>
 </tr>
 
 <style>
