@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: 'main'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,15 +27,13 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-          cache-dependency-path: mrdp-app/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install
-        working-directory: mrdp-app
 
       - name: Build
         run: pnpm build
-        working-directory: mrdp-app
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
@@ -42,7 +41,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'mrdp-app/build/'
+          path: 'build/'
 
   deploy:
     needs: build_site
