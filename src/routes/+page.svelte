@@ -67,6 +67,9 @@
 						<th rowspan="2" class="col-topic">Thema</th>
 						<th colspan="3" class="col-group-header">Kommission</th>
 						<th colspan="3" class="col-group-header">Ablauf</th>
+						{#if store.userRole === 'admin'}
+							<th colspan="3" class="col-group-header">Beurteilung</th>
+						{/if}
 					</tr>
 					<tr class="header-sub-row">
 						<th class="col-person group-start">KV/Stv.</th>
@@ -75,6 +78,11 @@
 						<th class="col-time group-start">StartVB</th>
 						<th class="col-time">Beginn</th>
 						<th class="col-time group-end">Ende</th>
+						{#if store.userRole === 'admin'}
+							<th class="col-grade group-start">P-Note</th>
+							<th class="col-grade">J-Note</th>
+							<th class="col-grade group-end">Gesamt</th>
+						{/if}
 					</tr>
 				</thead>
 				{#key localSelectedDate}
@@ -143,6 +151,11 @@
 	
 	th.col-time {
 		text-align: right;
+	}
+
+	th.col-grade {
+		text-align: center;
+		width: 4rem;
 	}
 
 	.col-topic {
