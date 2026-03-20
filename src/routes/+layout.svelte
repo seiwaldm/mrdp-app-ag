@@ -22,15 +22,6 @@
 	onMount(() => {
 		store.init();
 	});
-
-	async function handleSignOut() {
-		try {
-			await store.signOut();
-			goto(`${base}/login`);
-		} catch (e) {
-			console.error('Sign out failed:', e);
-		}
-	}
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
@@ -47,49 +38,10 @@
 		<button onclick={() => store.init()}>Erneut versuchen</button>
 	</div>
 {:else}
-	{#if store.session}
-		<div class="auth-bar">
-			<span class="user-email">{store.user?.email}</span>
-			<button class="signout-btn" onclick={handleSignOut}>Abmelden</button>
-		</div>
-	{/if}
 	{@render children()}
 {/if}
 
 <style>
-	.auth-bar {
-		position: fixed;
-		top: 1rem;
-		right: 1rem;
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		z-index: 1000;
-		background: var(--color-bg-surface);
-		padding: 0.5rem 1rem;
-		border-radius: var(--radius-md);
-		border: 1px solid var(--color-border);
-		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-	}
-
-	.user-email {
-		font-size: 0.75rem;
-		color: var(--color-text-secondary);
-	}
-
-	.signout-btn {
-		font-size: 0.75rem;
-		padding: 0.25rem 0.75rem !important;
-		background-color: transparent !important;
-		border: 1px solid var(--color-border) !important;
-		color: var(--color-text-primary) !important;
-	}
-
-	.signout-btn:hover {
-		border-color: var(--color-accent) !important;
-		color: var(--color-accent) !important;
-	}
-
 	.loading-screen, .error-screen {
 		display: flex;
 		flex-direction: column;

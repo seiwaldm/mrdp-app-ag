@@ -15,6 +15,17 @@
 
 	import ThemeToggle from './ThemeToggle.svelte';
 	import { base } from '$app/paths';
+	import { goto } from '$app/navigation';
+	import { store } from '$lib/store.svelte';
+
+	async function handleSignOut() {
+		try {
+			await store.signOut();
+			goto(`${base}/login`);
+		} catch (e) {
+			console.error('Sign out failed:', e);
+		}
+	}
 
 	function formatDate(dateStr: string) {
 		if (!dateStr) return '';
@@ -68,8 +79,13 @@
 		{/if}
 		
 		<div class="header-right">
+			{#if store.session}
+				<div class="user-info">
+					<span class="user-email">{store.user?.email}</span>
+					<button type="button" class="logout-btn" onclick={handleSignOut}>Abmelden</button>
+				</div>
+			{/if}
 			<ThemeToggle />
-			<button type="button" class="logout-btn">Logout</button>
 		</div>
 	</div>
 </header>
@@ -202,22 +218,41 @@
 		gap: 0.75rem;
 		align-items: center;
 	}
+
+	.user-info {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-right: 0.5rem;
+		padding-right: 0.75rem;
+		border-right: 1px solid var(--color-border);
+	}
+
+	.user-email {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+		max-width: 150px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 	
 	.logout-btn {
-		padding: 0.5rem 1rem;
+		padding: 0.4rem 0.8rem;
 		background-color: transparent;
 		color: var(--color-text-secondary);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-sm);
-		font-size: 0.875rem;
+		font-size: 0.8125rem;
+		font-weight: 500;
 		cursor: pointer;
 		transition: all 150ms;
 	}
 	
 	.logout-btn:hover {
 		background-color: var(--color-bg-elevated);
-		border-color: var(--color-text-muted);
-		color: var(--color-text-primary);
+		border-color: var(--color-accent);
+		color: var(--color-accent);
 	}
 	
 	@media (max-width: 640px) {
