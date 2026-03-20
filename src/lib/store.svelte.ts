@@ -12,6 +12,9 @@ class MrdpStore {
 	error = $state<string | null>(null);
 	now = $state<Date>(new Date());
 	selectedDate = $state<string | null>(null);
+	user = $state<any>(null);
+	session = $state<any>(null);
+	private authInitialized = false;
 
 	// Helper to format ISO to YYYY-MM-DDTHH:mm for datetime-local input
 	private formatToDateTimeLocal(iso: string | null): string | null {
@@ -45,6 +48,12 @@ class MrdpStore {
 		this.loading = true;
 		this.error = null;
 
+		// Initialize auth listener once
+		if (!this.authInitialized) {
+			this.initAuth();
+			this.authInitialized = true;
+		}
+
 		// Load theme from localStorage
 		this.loadFromLocalStorage();
 
@@ -53,6 +62,16 @@ class MrdpStore {
 			setInterval(() => {
 				this.now = new Date();
 			}, 60000);
+		}
+
+		// Wait for initial session check
+		const { data: { session } } = await supabase.auth.getSession();
+		this.session = session;
+		this.user = session?.user ?? null;
+
+		if (!this.session) {
+			this.loading = false;
+			return;
 		}
 
 		try {
@@ -141,6 +160,44 @@ class MrdpStore {
 				document.documentElement.classList.remove('light');
 			}
 		}
+	}
+
+	private initAuth() {
+		supabase.auth.onAuthStateChange((_event, session) => {
+			this.session = session;
+			this.user = session?.user ?? null;
+			
+			// If we just logged in and have no data, fetch it
+			if (session && this.antritte.length === 0) {
+				this.init();
+			}
+		});
+	}
+
+	async signInWithMagicLink(email: string) {
+		const redirectUrl = new URL(`${import.meta.env.BASE_URL}/auth/callback`, window.location.origin).toString();
+		const { error } = await supabase.auth.signInWithOtp({
+			email,
+			options: {
+				emailRedirectTo: redirectUrl
+			}
+		});
+		if (error) throw error;
+	}
+
+	async signOut() {
+		const { error } = await supabase.auth.signOut();
+		if (error) throw error;
+		// Clear local data
+		this.antritte = [];
+		this.kandidaten = [];
+		this.faecher = [];
+		this.themengebiete = [];
+		this.kommission = [];
+	}
+
+	get authenticated() {
+		return !!this.session;
 	}
 
 	getAntritt(id: string | number): Antritt | undefined {

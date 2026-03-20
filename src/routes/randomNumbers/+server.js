@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { RANDOM_API_KEY } from '$env/static/private';
-import Pocketbase from 'pocketbase';
+
 
 export function GET() {
 	return json([

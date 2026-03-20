@@ -11,7 +11,7 @@
 	import CommissionPanel from '$lib/components/CommissionPanel.svelte';
 
 	// Get ID from URL params (in SvelteKit $page store)
-	let antrittId = $derived($page.params.id);
+	let antrittId = $derived($page.params.id as string);
 
 	// Retrieve correct data based on ID
 	let antritt = $derived(store.getAntritt(antrittId)!);
