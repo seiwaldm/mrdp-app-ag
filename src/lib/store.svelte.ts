@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { base } from '$app/paths';
 import type { Antritt, ExamState, Fach, Kandidat, Kommissionsmitglied, Themengebiet, UserRole } from './types';
 
 class MrdpStore {
@@ -189,7 +190,7 @@ class MrdpStore {
 	}
 
 	async signInWithMagicLink(email: string) {
-		const redirectUrl = new URL(`${import.meta.env.BASE_URL}/auth/callback`, window.location.origin).toString();
+		const redirectUrl = `${window.location.origin}${base}/auth/callback`;
 		const { error } = await supabase.auth.signInWithOtp({
 			email,
 			options: {
