@@ -150,18 +150,21 @@
 								label="KV/Stv." 
 								members={store.kommission} 
 								selectedId={antritt?.kvId || null} 
+								readonly={store.userRole !== 'admin'}
 								onChange={(id) => updateCommission('kvId', id)} 
 							/>
 							<CommissionPanel 
 								label="Prüfer/in" 
 								members={store.kommission} 
 								selectedId={antritt?.prueferId || null} 
+								readonly={store.userRole !== 'admin'}
 								onChange={(id) => updateCommission('prueferId', id)} 
 							/>
 							<CommissionPanel 
 								label="Beisitz" 
 								members={store.kommission} 
 								selectedId={antritt?.beisitzId || null} 
+								readonly={store.userRole !== 'admin'}
 								onChange={(id) => updateCommission('beisitzId', id)} 
 							/>
 						</div>
@@ -175,16 +178,19 @@
 							<TimeSlot 
 								label="Start VB" 
 								value={antritt?.startVB || null} 
+								readonly={store.userRole !== 'admin'}
 								onChange={(t) => updateTime('startVB', t)} 
 							/>
 							<TimeSlot 
 								label="Beginn" 
 								value={antritt?.beginn || null} 
+								readonly={store.userRole !== 'admin'}
 								onChange={(t) => updateTime('beginn', t)} 
 							/>
 							<TimeSlot 
 								label="Ende" 
 								value={antritt?.ende || null} 
+								readonly={store.userRole !== 'admin'}
 								onChange={(t) => updateTime('ende', t)} 
 							/>
 						</div>
@@ -212,6 +218,7 @@
 								value={antritt?.aufgabeNr || ''}
 								oninput={handleAufgabenNr}
 								placeholder="z.B. A1"
+								readonly={store.userRole !== 'admin'}
 							/>
 						</div>
 					{/if}

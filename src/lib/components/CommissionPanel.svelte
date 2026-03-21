@@ -5,11 +5,13 @@
 		label,
 		members,
 		selectedId,
+		readonly = false,
 		onChange
 	}: {
 		label: string;
 		members: Kommissionsmitglied[];
 		selectedId: string | number | null;
+		readonly?: boolean;
 		onChange: (id: string | number | null) => void;
 	} = $props();
 	
@@ -17,16 +19,24 @@
 		const select = event.target as HTMLSelectElement;
 		onChange(select.value || null);
 	}
+
+	let selectedMember = $derived(members.find(m => String(m.id) === String(selectedId)));
 </script>
 
 <div class="commission-panel">
 	<span class="label">{label}:</span>
-	<select class="member-select" value={selectedId || ''} onchange={handleChange}>
-		<option value="">-- Nicht zugewiesen --</option>
-		{#each members as member}
-			<option value={member.id}>{member.nachname} {member.vorname}</option>
-		{/each}
-	</select>
+	{#if readonly}
+		<div class="member-display">
+			{selectedMember ? `${selectedMember.nachname} ${selectedMember.vorname}` : '—'}
+		</div>
+	{:else}
+		<select class="member-select" value={selectedId || ''} onchange={handleChange}>
+			<option value="">-- Nicht zugewiesen --</option>
+			{#each members as member}
+				<option value={member.id}>{member.nachname} {member.vorname}</option>
+			{/each}
+		</select>
+	{/if}
 </div>
 
 <style>
@@ -56,5 +66,14 @@
 	
 	.member-select:focus {
 		border-color: var(--color-accent);
+	}
+
+	.member-display {
+		padding: 0.5rem;
+		background-color: var(--color-bg-base);
+		color: var(--color-text-primary);
+		border: 1px solid transparent;
+		font-size: 0.875rem;
+		font-weight: 500;
 	}
 </style>

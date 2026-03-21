@@ -2,10 +2,12 @@
 	let {
 		label,
 		value,
+		readonly = false,
 		onChange
 	}: {
 		label: string;
 		value: string | null;
+		readonly?: boolean;
 		onChange: (time: string) => void;
 	} = $props();
 	
@@ -54,30 +56,41 @@
 	}
 </script>
 
-<div class="time-slot">
+<div class="time-slot" class:readonly>
 	<span class="time-label">{label}</span>
 	<div class="time-controls">
-		<button type="button" class="btn-now" onclick={setCurrentTime} title="Jetzt setzen">
-			⏱
-		</button>
-		<div class="input-group">
-			<input 
-				type="date" 
-				class="date-input font-mono" 
-				value={datePart} 
-				oninput={handleDateChange}
-				class:filled={datePart}
-			/>
-			<input 
-				type="text" 
-				class="time-input-forced font-mono" 
-				value={timePart} 
-				oninput={handleTimeChange}
-				placeholder="HH:mm"
-				maxlength="5"
-				class:filled={timePart}
-			/>
-		</div>
+		{#if readonly}
+			<div class="time-display font-mono">
+				{#if datePart || timePart}
+					<span class="date-val">{datePart}</span>
+					<span class="time-val">{timePart}</span>
+				{:else}
+					<span class="empty-val">—</span>
+				{/if}
+			</div>
+		{:else}
+			<button type="button" class="btn-now" onclick={setCurrentTime} title="Jetzt setzen">
+				⏱
+			</button>
+			<div class="input-group">
+				<input 
+					type="date" 
+					class="date-input font-mono" 
+					value={datePart} 
+					oninput={handleDateChange}
+					class:filled={datePart}
+				/>
+				<input 
+					type="text" 
+					class="time-input-forced font-mono" 
+					value={timePart} 
+					oninput={handleTimeChange}
+					placeholder="HH:mm"
+					maxlength="5"
+					class:filled={timePart}
+				/>
+			</div>
+		{/if}
 	</div>
 </div>
 
@@ -161,5 +174,22 @@
 
 	.input-group:focus-within {
 		border-color: var(--color-accent);
+	}
+
+	.time-display {
+		display: flex;
+		gap: 0.75rem;
+		font-size: 0.875rem;
+		color: var(--color-accent);
+		padding: 0.25rem 0.5rem;
+	}
+
+	.date-val {
+		border-right: 1px solid var(--color-border);
+		padding-right: 0.75rem;
+	}
+
+	.empty-val {
+		color: var(--color-text-muted);
 	}
 </style>
