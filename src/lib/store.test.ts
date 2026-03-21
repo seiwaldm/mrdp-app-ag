@@ -1,24 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { store } from './store.svelte';
 
-vi.mock('./supabase', () => ({
-	supabase: {
-		from: vi.fn(() => ({
-			select: vi.fn().mockReturnThis(),
-			eq: vi.fn().mockReturnThis(),
-			single: vi.fn().mockImplementation(() => Promise.resolve({ data: null, error: null })),
-			maybeSingle: vi.fn().mockImplementation(() => Promise.resolve({ data: null, error: null })),
-			update: vi.fn().mockReturnThis(),
-			upsert: vi.fn().mockImplementation(() => Promise.resolve({ error: null })),
-			then: (onfulfilled: any) => onfulfilled({ data: [], error: null })
-		})),
-		auth: {
-			getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
-			onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } }))
-		}
-	}
-}));
-
 describe('MrdpStore', () => {
 	beforeEach(() => {
 		// Clear and setup mock data

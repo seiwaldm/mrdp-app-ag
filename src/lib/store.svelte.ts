@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { Antritt, ExamState, Fach, Kandidat, Kommissionsmitglied, Themengebiet, UserRole } from './types';
+import type { Antritt, ExamState, Fach, Kandidat, Kommissionsmitglied, Themengebiet } from './types';
 
 class MrdpStore {
 	kandidaten = $state<Kandidat[]>([]);
@@ -14,7 +14,6 @@ class MrdpStore {
 	selectedDate = $state<string | null>(null);
 	user = $state<any>(null);
 	session = $state<any>(null);
-	userRole = $state<UserRole | null>(null);
 	private authInitialized = false;
 
 	// Helper to format ISO to YYYY-MM-DDTHH:mm for datetime-local input
@@ -71,25 +70,11 @@ class MrdpStore {
 		this.user = session?.user ?? null;
 
 		if (!this.session) {
-			this.userRole = null;
 			this.loading = false;
 			return;
 		}
 
-		// Fetch user role
-		const { data: roleData } = await supabase
-			.from('user_roles')
-			.select('role')
-			.eq('id', this.user.id)
-			.single();
-		
-		this.userRole = (roleData?.role as UserRole) || 'user';
-
 		try {
-			const antritteQuery = this.userRole === 'admin'
-				? supabase.from('antritte').select('*, antritte_noten(*)')
-				: supabase.from('antritte').select('*');
-
 			const [
 				{ data: candidates },
 				{ data: subjects },
@@ -101,7 +86,7 @@ class MrdpStore {
 				supabase.from('faecher').select('*'),
 				supabase.from('themengegebiete').select('*'),
 				supabase.from('kommissionsmitglieder').select('*'),
-				antritteQuery
+				supabase.from('antritte').select('*')
 			]);
 
 			this.kandidaten = (candidates || []) as Kandidat[];
@@ -127,8 +112,8 @@ class MrdpStore {
 				beisitzId: a.beisitz_id,
 				kvId: a.kv_id,
 				aufgabeNr: a.aufgabe_nr,
-				pruefungsnote: (a.antritte_noten?.[0] || a.antritte_noten)?.pruefungsnote ?? null,
-				jahresnote: (a.antritte_noten?.[0] || a.antritte_noten)?.jahresnote ?? null
+				pruefungsnote: a.pruefungsnote,
+				jahresnote: a.jahresnote
 			})) as Antritt[];
 		} catch (e: any) {
 			console.error('Failed to load data from Supabase', e);
@@ -182,12 +167,9 @@ class MrdpStore {
 			this.session = session;
 			this.user = session?.user ?? null;
 			
-			// If we have a session, fetch/refresh data
-			if (session) {
+			// If we just logged in and have no data, fetch it
+			if (session && this.antritte.length === 0) {
 				this.init();
-			} else {
-				// Clear data on logout
-				this.signOut();
 			}
 		});
 	}
@@ -306,25 +288,17 @@ class MrdpStore {
 			if ('beisitzId' in updates) dbUpdates.beisitz_id = updates.beisitzId;
 			if ('kvId' in updates) dbUpdates.kv_id = updates.kvId;
 			if ('aufgabeNr' in updates) dbUpdates.aufgabe_nr = updates.aufgabeNr;
+			if ('pruefungsnote' in updates) dbUpdates.pruefungsnote = updates.pruefungsnote;
+			if ('jahresnote' in updates) dbUpdates.jahresnote = updates.jahresnote;
 
-			const notenUpdates: any = {};
-			if ('pruefungsnote' in updates) notenUpdates.pruefungsnote = updates.pruefungsnote;
-			if ('jahresnote' in updates) notenUpdates.jahresnote = updates.jahresnote;
+			const { error } = await supabase
+				.from('antritte')
+				.update(dbUpdates)
+				.eq('id', id);
 
-			const promises = [];
-			if (Object.keys(dbUpdates).length > 0) {
-				promises.push(supabase.from('antritte').update(dbUpdates).eq('id', id));
-			}
-			if (Object.keys(notenUpdates).length > 0 && this.userRole === 'admin') {
-				promises.push(supabase.from('antritte_noten').upsert({ id, ...notenUpdates }));
-			}
-
-			const results = await Promise.all(promises);
-			const firstError = results.find(r => r.error)?.error;
-
-			if (firstError) {
-				console.error('Failed to update antritt in Supabase', firstError);
-				this.error = firstError.message;
+			if (error) {
+				console.error('Failed to update antritt in Supabase', error);
+				this.error = error.message;
 				// Rollback local state on DB error? 
 				// For now just keeping the error visible.
 			}

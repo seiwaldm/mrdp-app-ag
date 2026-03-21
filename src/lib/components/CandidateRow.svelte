@@ -65,17 +65,6 @@
 	<td class="col-time font-mono group-start" class:filled={antritt.startVB}>{formatTime(antritt.startVB)}</td>
 	<td class="col-time font-mono" class:filled={antritt.beginn}>{formatTime(antritt.beginn)}</td>
 	<td class="col-time font-mono group-end" class:filled={antritt.ende}>{formatTime(antritt.ende)}</td>
-	{#if store.userRole === 'admin'}
-		<td class="col-grade font-mono group-start">{antritt.pruefungsnote ?? '—'}</td>
-		<td class="col-grade font-mono">{antritt.jahresnote ?? '—'}</td>
-		<td class="col-grade font-mono group-end">
-			{#if antritt.pruefungsnote && antritt.jahresnote}
-				{Math.round((antritt.pruefungsnote + antritt.jahresnote) / 2)}
-			{:else}
-				—
-			{/if}
-		</td>
-	{/if}
 </tr>
 
 <style>
@@ -168,14 +157,6 @@
 		text-align: right;
 		color: var(--color-text-muted);
 		font-size: 0.875rem;
-	}
-
-	.col-grade {
-		width: 4rem;
-		text-align: center;
-		color: var(--color-text-primary);
-		font-size: 0.875rem;
-		font-weight: 500;
 	}
 
 	.col-topic {

@@ -26,13 +26,6 @@ export interface Kommissionsmitglied {
 
 export type ExamState = 'waiting' | 'prep' | 'exam' | 'done';
 
-export type UserRole = 'admin' | 'user';
-
-export interface UserProfile {
-	id: string;
-	role: UserRole;
-}
-
 export interface Antritt {
 	id: number | string;
 	kandidatId: number | string;
@@ -47,6 +40,6 @@ export interface Antritt {
 	beisitzId: number | string | null;
 	kvId: number | string | null;
 	aufgabeNr?: number | null;
-	pruefungsnote?: 1 | 2 | 3 | 4 | 5 | null;
-	jahresnote?: number | null;
+	pruefungsnote: 1 | 2 | 3 | 4 | 5 | null;
+	jahresnote: number | null;
 }
