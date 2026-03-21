@@ -216,44 +216,46 @@
 						</div>
 					{/if}
 
-					<div class="beurteilung-section mt-6">
-						<h3 class="section-label beurteilung-label">BEURTEILUNG</h3>
-						<div class="beurteilung-card">
-							<div class="grade-row">
-								<span class="grade-label">Prüfungsnote:</span>
-								<div class="flex-1">
-									<GradeSelector 
-										value={antritt?.pruefungsnote || null} 
-										onChange={handleGradeChange} 
+					{#if store.userRole === 'admin'}
+						<div class="beurteilung-section mt-6">
+							<h3 class="section-label beurteilung-label">BEURTEILUNG</h3>
+							<div class="beurteilung-card">
+								<div class="grade-row">
+									<span class="grade-label">Prüfungsnote:</span>
+									<div class="flex-1">
+										<GradeSelector 
+											value={antritt?.pruefungsnote || null} 
+											onChange={handleGradeChange} 
+										/>
+									</div>
+								</div>
+								
+								<div class="grade-row">
+									<span class="grade-label">Jahresnote:</span>
+									<input 
+										type="number" 
+										min="1" max="5" 
+										class="year-grade-input font-mono" 
+										value={antritt?.jahresnote || ''} 
+										oninput={handleYearGradeChange}
 									/>
 								</div>
-							</div>
-							
-							<div class="grade-row">
-								<span class="grade-label">Jahresnote:</span>
-								<input 
-									type="number" 
-									min="1" max="5" 
-									class="year-grade-input font-mono" 
-									value={antritt?.jahresnote || ''} 
-									oninput={handleYearGradeChange}
-								/>
-							</div>
 
-							<hr class="divider my-4" />
+								<hr class="divider my-4" />
 
-							<div class="final-grade">
-								<span class="final-grade-label">Maturazeugnis:</span>
-								<span class="final-grade-value font-mono">
-									{#if computedMark}
-										<span class="equals-sign">=</span> {computedMark} <span class="muted-text">(errechnet)</span>
-									{:else}
-										<span class="muted-text">—</span>
-									{/if}
-								</span>
+								<div class="final-grade">
+									<span class="final-grade-label">Maturazeugnis:</span>
+									<span class="final-grade-value font-mono">
+										{#if computedMark}
+											<span class="equals-sign">=</span> {computedMark} <span class="muted-text">(errechnet)</span>
+										{:else}
+											<span class="muted-text">—</span>
+										{/if}
+									</span>
+								</div>
 							</div>
 						</div>
-					</div>
+					{/if}
 				</div>
 			</div>
 
