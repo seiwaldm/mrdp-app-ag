@@ -4,7 +4,7 @@
 
 	const tables = [
 		{ href: `${base}/admin/kandidaten`, label: 'Kandidaten', icon: '👤', description: 'Prüfungskandidaten verwalten', get count() { return store.kandidaten.length; } },
-		{ href: `${base}/admin/kommissionsmitglieder`, label: 'Kommissionsmitglieder', icon: '👥', description: 'Prüfer, Beisitzer und KV', get count() { return store.kommission.length; } },
+		{ href: `${base}/admin/kommissionsmitglieder`, label: 'Kommission', icon: '👥', description: 'Prüfer, Beisitzer und KVs', get count() { return store.kommission.length; } },
 		{ href: `${base}/admin/faecher`, label: 'Fächer', icon: '📚', description: 'Prüfungsfächer verwalten', get count() { return store.faecher.length; } },
 		{ href: `${base}/admin/themengebiete`, label: 'Themengebiete', icon: '📋', description: 'Themengebiete pro Fach', get count() { return store.themengebiete.length; } },
 		{ href: `${base}/admin/antritte`, label: 'Antritte', icon: '📝', description: 'Prüfungsantritte verwalten', get count() { return store.antritte.length; } },
