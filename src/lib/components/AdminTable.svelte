@@ -30,6 +30,43 @@
 	let saving = $state(false);
 	let error = $state<string | null>(null);
 
+	let sortKey = $state<string | null>(null);
+	let sortOrder = $state<'asc' | 'desc'>('asc');
+
+	let sortedData = $derived(() => {
+		if (!sortKey) return data;
+		return [...data].sort((a, b) => {
+			let valA = a[sortKey!];
+			let valB = b[sortKey!];
+			
+			const col = columns.find(c => c.key === sortKey);
+			if (col) {
+                if (col.type === 'select' || col.type === 'multiselect') {
+                    valA = getDisplayValue(a, col);
+                    valB = getDisplayValue(b, col);
+                }
+            }
+
+			if (typeof valA === 'string' && typeof valB === 'string') {
+				return sortOrder === 'asc' ? valA.localeCompare(valB, 'de') : valB.localeCompare(valA, 'de');
+			}
+            valA = valA ?? '';
+            valB = valB ?? '';
+			return sortOrder === 'asc' 
+				? (valA > valB ? 1 : valA < valB ? -1 : 0)
+				: (valA < valB ? 1 : valA > valB ? -1 : 0);
+		});
+	});
+
+	function toggleSort(key: string) {
+		if (sortKey === key) {
+			sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortKey = key;
+			sortOrder = 'asc';
+		}
+	}
+
 	function getDbKey(col: ColumnDef): string {
 		return col.dbKey || col.key;
 	}
@@ -165,25 +202,39 @@
 	<table class="admin-table">
 		<thead>
 			<tr>
-				<th class="col-id">ID</th>
 				{#each columns as col}
-					<th>{col.label}</th>
+					<th class="sortable-header" onclick={() => toggleSort(col.key)}>
+						<div class="header-content">
+							<span>{col.label}</span>
+							<span class="sort-icon" class:active={sortKey === col.key}>
+								{sortKey === col.key ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}
+							</span>
+						</div>
+					</th>
 				{/each}
 				<th class="col-actions">Aktionen</th>
 			</tr>
 		</thead>
 		<tbody>
-			{#each data as row (row.id)}
+			{#each sortedData() as row (row.id)}
 				{#if editingId === row.id}
 					<tr class="editing-row">
-						<td class="col-id">{row.id}</td>
 						{#each columns as col}
 							<td>
 								{#if col.type === 'select' && col.options}
 									<select
 										class="edit-input"
 										value={editValues[col.key] ?? ''}
-										onchange={(e) => { editValues[col.key] = e.currentTarget.value ? Number(e.currentTarget.value) : null; editValues = {...editValues}; }}
+										onchange={(e) => { 
+											const val = e.currentTarget.value;
+											if (!val) {
+												editValues[col.key] = null;
+											} else {
+												const isNumeric = col.options?.some(o => typeof o.value === 'number') ?? true;
+												editValues[col.key] = isNumeric ? Number(val) : val;
+											}
+											editValues = {...editValues}; 
+										}}
 									>
 										<option value="">— Keine Auswahl —</option>
 										{#each col.options as opt}
@@ -224,7 +275,7 @@
 					</tr>
 				{:else if deletingId === row.id}
 					<tr class="deleting-row">
-						<td colspan={columns.length + 2}>
+						<td colspan={columns.length + 1}>
 							<div class="delete-confirm">
 								<span>Eintrag #{row.id} wirklich löschen?</span>
 								<button type="button" class="btn-delete-confirm" onclick={() => confirmDelete(row.id)} disabled={saving}>
@@ -236,7 +287,6 @@
 					</tr>
 				{:else}
 					<tr>
-						<td class="col-id">{row.id}</td>
 						{#each columns as col}
 							<td>{getDisplayValue(row, col)}</td>
 						{/each}
@@ -252,14 +302,22 @@
 
 			{#if addingNew}
 				<tr class="adding-row">
-					<td class="col-id">—</td>
 					{#each columns as col}
 						<td>
 							{#if col.type === 'select' && col.options}
 								<select
 									class="edit-input"
 									value={newValues[col.key] ?? ''}
-									onchange={(e) => { newValues[col.key] = e.currentTarget.value ? Number(e.currentTarget.value) : null; newValues = {...newValues}; }}
+									onchange={(e) => { 
+										const val = e.currentTarget.value;
+										if (!val) {
+											newValues[col.key] = null;
+										} else {
+											const isNumeric = col.options?.some(o => typeof o.value === 'number') ?? true;
+											newValues[col.key] = isNumeric ? Number(val) : val;
+										}
+										newValues = {...newValues}; 
+									}}
 								>
 									<option value="">— Keine Auswahl —</option>
 									{#each col.options as opt}
@@ -362,7 +420,7 @@
 	}
 
 	th {
-		padding: 0.75rem 1rem;
+		padding: 0;
 		text-align: left;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -370,6 +428,43 @@
 		text-transform: uppercase;
 		color: var(--color-text-muted);
 		white-space: nowrap;
+	}
+
+	.sortable-header {
+		cursor: pointer;
+		user-select: none;
+		transition: background-color 150ms;
+	}
+
+	.sortable-header:hover {
+		background-color: rgba(0, 0, 0, 0.03);
+	}
+
+	:root.dark .sortable-header:hover {
+		background-color: rgba(255, 255, 255, 0.03);
+	}
+
+	.header-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.75rem 1rem;
+		gap: 0.5rem;
+	}
+
+	.sort-icon {
+		font-size: 0.75rem;
+		opacity: 0.2;
+		transition: opacity 150ms;
+	}
+
+	.sort-icon.active {
+		opacity: 1;
+		color: var(--color-accent);
+	}
+
+	.sortable-header:hover .sort-icon:not(.active) {
+		opacity: 0.5;
 	}
 
 	td {
@@ -380,16 +475,10 @@
 		vertical-align: middle;
 	}
 
-	.col-id {
-		width: 4rem;
-		color: var(--color-text-muted);
-		font-family: var(--font-mono);
-		font-size: 0.8125rem;
-	}
-
 	.col-actions {
 		width: 6rem;
 		text-align: right;
+		padding: 0.75rem 1rem;
 	}
 
 	tr:hover:not(.editing-row):not(.adding-row):not(.deleting-row) {

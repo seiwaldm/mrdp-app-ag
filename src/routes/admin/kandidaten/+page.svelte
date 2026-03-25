@@ -9,7 +9,17 @@
 	const columns: ColumnDef[] = [
 		{ key: 'vorname', label: 'Vorname', type: 'text', required: true },
 		{ key: 'nachname', label: 'Nachname', type: 'text', required: true },
-		{ key: 'klasse', label: 'Klasse', type: 'text', required: true },
+		{ 
+			key: 'klasse', 
+			label: 'Klasse', 
+			type: 'select', 
+			required: true,
+			options: [
+				{ value: '5AHK', label: '5AHK' },
+				{ value: '5BHK', label: '5BHK' },
+				{ value: '5CHK', label: '5CHK' }
+			]
+		},
 	];
 
 	async function loadData() {

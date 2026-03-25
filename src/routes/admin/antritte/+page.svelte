@@ -25,6 +25,46 @@
 	// Delete state
 	let deletingId = $state<number | string | null>(null);
 
+	let sortKey = $state<string | null>(null);
+	let sortOrder = $state<'asc' | 'desc'>('asc');
+
+	let sortedData = $derived(() => {
+		if (!sortKey) return data;
+		return [...data].sort((a, b) => {
+			let valA = a[sortKey!];
+			let valB = b[sortKey!];
+
+			if (sortKey === 'kandidat_id') {
+				valA = getKandidatName(a.kandidat_id);
+				valB = getKandidatName(b.kandidat_id);
+			} else if (sortKey === 'fach_id') {
+				valA = getFachName(a.fach_id);
+				valB = getFachName(b.fach_id);
+			} else if (sortKey === 'start_vb') {
+				valA = valA || '';
+				valB = valB || '';
+			}
+
+			if (typeof valA === 'string' && typeof valB === 'string') {
+				return sortOrder === 'asc' ? valA.localeCompare(valB, 'de') : valB.localeCompare(valA, 'de');
+			}
+			valA = valA ?? '';
+			valB = valB ?? '';
+			return sortOrder === 'asc' 
+				? (valA > valB ? 1 : valA < valB ? -1 : 0)
+				: (valA < valB ? 1 : valA > valB ? -1 : 0);
+		});
+	});
+
+	function toggleSort(key: string) {
+		if (sortKey === key) {
+			sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortKey = key;
+			sortOrder = 'asc';
+		}
+	}
+
 	async function loadData() {
 		loading = true;
 		const { data: rows } = await supabase
@@ -210,19 +250,37 @@
 			<table class="admin-table">
 				<thead>
 					<tr>
-						<th class="col-id">ID</th>
-						<th>Kandidat/in</th>
-						<th>Fach</th>
-						<th>Jahresnote</th>
-						<th>Datum</th>
+						<th class="sortable-header" onclick={() => toggleSort('kandidat_id')}>
+							<div class="header-content">	
+								<span>Kandidat/in</span>
+								<span class="sort-icon" class:active={sortKey === 'kandidat_id'}>{sortKey === 'kandidat_id' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</span>
+							</div>
+						</th>
+						<th class="sortable-header" onclick={() => toggleSort('fach_id')}>
+							<div class="header-content">	
+								<span>Fach</span>
+								<span class="sort-icon" class:active={sortKey === 'fach_id'}>{sortKey === 'fach_id' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</span>
+							</div>
+						</th>
+						<th class="sortable-header" onclick={() => toggleSort('jahresnote')}>
+							<div class="header-content">	
+								<span>Jahresnote</span>
+								<span class="sort-icon" class:active={sortKey === 'jahresnote'}>{sortKey === 'jahresnote' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</span>
+							</div>
+						</th>
+						<th class="sortable-header" onclick={() => toggleSort('start_vb')}>
+							<div class="header-content">	
+								<span>Datum</span>
+								<span class="sort-icon" class:active={sortKey === 'start_vb'}>{sortKey === 'start_vb' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</span>
+							</div>
+						</th>
 						<th class="col-actions">Aktionen</th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each data as row (row.id)}
+					{#each sortedData() as row (row.id)}
 						{#if editingId === row.id}
 							<tr class="editing-row">
-								<td class="col-id">{row.id}</td>
 								<td>
 									<select class="edit-input" bind:value={editKandidatId}>
 										<option value="">— Auswählen —</option>
@@ -275,7 +333,6 @@
 							</tr>
 						{:else}
 							<tr>
-								<td class="col-id">{row.id}</td>
 								<td>{getKandidatName(row.kandidat_id)}</td>
 								<td>{getFachName(row.fach_id)}</td>
 								<td>{row.jahresnote || '—'}</td>
@@ -292,7 +349,6 @@
 
 					{#if addingNew}
 						<tr class="adding-row">
-							<td class="col-id">—</td>
 							<td>
 								<select class="edit-input" bind:value={newKandidatId}>
 									<option value="">— Auswählen —</option>
@@ -396,7 +452,7 @@
 	}
 
 	th {
-		padding: 0.75rem 1rem;
+		padding: 0;
 		text-align: left;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -404,6 +460,43 @@
 		text-transform: uppercase;
 		color: var(--color-text-muted);
 		white-space: nowrap;
+	}
+
+	.sortable-header {
+		cursor: pointer;
+		user-select: none;
+		transition: background-color 150ms;
+	}
+
+	.sortable-header:hover {
+		background-color: rgba(0, 0, 0, 0.03);
+	}
+
+	:root.dark .sortable-header:hover {
+		background-color: rgba(255, 255, 255, 0.03);
+	}
+
+	.header-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.75rem 1rem;
+		gap: 0.5rem;
+	}
+
+	.sort-icon {
+		font-size: 0.75rem;
+		opacity: 0.2;
+		transition: opacity 150ms;
+	}
+
+	.sort-icon.active {
+		opacity: 1;
+		color: var(--color-accent);
+	}
+
+	.sortable-header:hover .sort-icon:not(.active) {
+		opacity: 0.5;
 	}
 
 	td {
@@ -414,14 +507,7 @@
 		vertical-align: middle;
 	}
 
-	.col-id {
-		width: 4rem;
-		color: var(--color-text-muted);
-		font-family: var(--font-mono);
-		font-size: 0.8125rem;
-	}
-
-	.col-actions { width: 6rem; text-align: right; }
+	.col-actions { width: 6rem; text-align: right; padding: 0.75rem 1rem; }
 
 	tr:hover:not(.editing-row):not(.adding-row):not(.deleting-row) {
 		background-color: var(--color-bg-elevated);
