@@ -1,6 +1,24 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { store } from './store.svelte';
 
+vi.mock('./supabase', () => {
+	const chain: any = {
+		select: vi.fn().mockReturnThis(),
+	};
+	chain.update = vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) });
+	chain.upsert = vi.fn().mockResolvedValue({ data: null, error: null });
+
+	return {
+		supabase: {
+			from: vi.fn(() => chain),
+			auth: {
+				getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+				onAuthStateChange: vi.fn()
+			}
+		}
+	};
+});
+
 describe('MrdpStore', () => {
 	beforeEach(() => {
 		// Clear and setup mock data
@@ -11,9 +29,9 @@ describe('MrdpStore', () => {
 			{ id: 1, bezeichnung: 'Betriebswirtschaft', kurzform: 'BWM' }
 		];
 		store.themengebiete = [
-			{ id: 101, bezeichnung: 'Marketing', fachId: 1 },
-			{ id: 102, bezeichnung: 'Finanzierung', fachId: 1 },
-			{ id: 103, bezeichnung: 'Recht', fachId: 1 }
+			{ id: 101, bezeichnung: 'Marketing', fachId: 1, nr: 1 },
+			{ id: 102, bezeichnung: 'Finanzierung', fachId: 1, nr: 2 },
+			{ id: 103, bezeichnung: 'Recht', fachId: 1, nr: 3 }
 		];
 		store.antritte = [
 			{ 

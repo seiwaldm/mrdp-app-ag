@@ -18,7 +18,7 @@ describe('TopicDraw.svelte', () => {
 			onSelect: vi.fn()
 		});
 
-		expect(screen.getByText(/Zwei Themen ziehen/i)).toBeDefined();
+		expect(screen.getByText(/Zwei Themengebiete ziehen/i)).toBeDefined();
 	});
 
 	it('should call onDraw when draw button is clicked', async () => {
@@ -29,7 +29,7 @@ describe('TopicDraw.svelte', () => {
 			onSelect: vi.fn()
 		});
 
-		const button = screen.getByText(/Zwei Themen ziehen/i);
+		const button = screen.getByText(/Zwei Themengebiete ziehen/i);
 		await fireEvent.click(button);
 
 		expect(onDraw).toHaveBeenCalled();
@@ -46,7 +46,7 @@ describe('TopicDraw.svelte', () => {
 
 		expect(screen.getByText('Topic 1')).toBeDefined();
 		expect(screen.getByText('Topic 2')).toBeDefined();
-		expect(screen.getByText(/Bitte wählen Sie ein Thema/i)).toBeDefined();
+		expect(screen.getByText(/Bitte wählen Sie ein Themengebiet/i)).toBeDefined();
 	});
 
 	it('should call onSelect when a topic card is clicked', async () => {
@@ -80,7 +80,7 @@ describe('TopicDraw.svelte', () => {
 			onSelect: vi.fn()
 		});
 
-		expect(screen.getByText(/Gewähltes Thema:/i)).toBeDefined();
+		expect(screen.getByText(/Gewähltes Themengebiet:/i)).toBeDefined();
 		expect(screen.getAllByText('Topic 1')).toHaveLength(2); // One in the list, one in the selection info
 	});
 
