@@ -80,6 +80,9 @@
 		
 		<div class="header-right">
 			{#if store.session}
+				{#if store.userRole === 'admin'}
+					<a href="{base}/admin" class="admin-link" title="Admin-Bereich">⚙</a>
+				{/if}
 				<div class="user-info">
 					<span class="user-email">{store.user?.email}</span>
 					<button type="button" class="logout-btn" onclick={handleSignOut}>Abmelden</button>
@@ -249,6 +252,24 @@
 		transition: all 150ms;
 	}
 	
+	.admin-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		font-size: 1.25rem;
+		color: var(--color-text-secondary);
+		text-decoration: none;
+		border-radius: var(--radius-sm);
+		transition: all 150ms;
+	}
+
+	.admin-link:hover {
+		background-color: var(--color-bg-elevated);
+		color: var(--color-accent);
+	}
+
 	.logout-btn:hover {
 		background-color: var(--color-bg-elevated);
 		border-color: var(--color-accent);
