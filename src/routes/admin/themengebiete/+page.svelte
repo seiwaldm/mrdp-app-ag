@@ -7,6 +7,7 @@
 	let loading = $state(true);
 
 	let columns = $derived<ColumnDef[]>([
+		{ key: 'nr', label: 'Nr', type: 'number', required: true },
 		{ key: 'bezeichnung', label: 'Bezeichnung', type: 'text', required: true },
 		{
 			key: 'fach_id',

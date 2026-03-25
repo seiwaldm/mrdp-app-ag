@@ -5,7 +5,7 @@
 		onSelect = null,
 		selectable = false
 	}: {
-		topic: { id: string | number; bezeichnung: string };
+		topic: { id: string | number; bezeichnung: string; nr?: number };
 		selected?: boolean;
 		onSelect?: (() => void) | null;
 		selectable?: boolean;
@@ -23,7 +23,12 @@
 	{#if selected}
 		<div class="check-mark">✓</div>
 	{/if}
-	<span class="topic-text">{topic.bezeichnung}</span>
+	<span class="topic-text">
+		{#if topic.nr !== undefined}
+			<span class="topic-nr">{topic.nr}.</span>
+		{/if}
+		{topic.bezeichnung}
+	</span>
 </button>
 
 <style>
@@ -69,5 +74,12 @@
 	.topic-text {
 		display: block;
 		padding-right: 1.5rem;
+	}
+	
+	.topic-nr {
+		font-family: var(--font-mono);
+		font-weight: 500;
+		color: var(--color-text-secondary);
+		margin-right: 0.25rem;
 	}
 </style>

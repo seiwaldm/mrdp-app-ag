@@ -58,13 +58,7 @@
 		}
 	}
 
-	function handleYearGradeChange(event: Event) {
-		if (antritt) {
-			const input = event.target as HTMLInputElement;
-			const val = parseInt(input.value);
-			store.updateAntritt(antrittId, { jahresnote: isNaN(val) ? null : val });
-		}
-	}
+	// handleYearGradeChange removed since Jahresnote is now read-only
 
 	function updateCommission(role: 'kvId' | 'prueferId' | 'beisitzId', memberId: string | number | null) {
 		if (antritt) {
@@ -74,8 +68,8 @@
 	
 	function handleAufgabenNr(event: Event) {
 		if (antritt) {
-			const input = event.target as HTMLInputElement;
-			const val = parseInt(input.value);
+			const select = event.target as HTMLSelectElement;
+			const val = parseInt(select.value);
 			store.updateAntritt(antrittId, { aufgabeNr: isNaN(val) ? null : val });
 		}
 	}
@@ -212,14 +206,16 @@
 						<div class="aufgaben-nr mt-4">
 							<label for="aufgaben-nr" class="grade-label">Aufgaben-Nr.:</label>
 							{#if store.userRole === 'admin'}
-								<input 
+								<select 
 									id="aufgaben-nr"
-									type="number" 
 									class="aufgaben-input font-mono" 
-									value={antritt?.aufgabeNr || ''}
-									oninput={handleAufgabenNr}
-									placeholder="z.B. A1"
-								/>
+									onchange={handleAufgabenNr}
+								>
+									<option value="" selected={antritt?.aufgabeNr == null}>—</option>
+									<option value="1" selected={antritt?.aufgabeNr === 1}>1</option>
+									<option value="2" selected={antritt?.aufgabeNr === 2}>2</option>
+									<option value="3" selected={antritt?.aufgabeNr === 3}>3</option>
+								</select>
 							{:else}
 								<div class="aufgaben-display font-mono">
 									{antritt?.aufgabeNr || '—'}
@@ -244,13 +240,9 @@
 								
 								<div class="grade-row">
 									<span class="grade-label">Jahresnote:</span>
-									<input 
-										type="number" 
-										min="1" max="5" 
-										class="year-grade-input font-mono" 
-										value={antritt?.jahresnote || ''} 
-										oninput={handleYearGradeChange}
-									/>
+									<div class="year-grade-display font-mono">
+										{antritt?.jahresnote || '—'}
+									</div>
 								</div>
 
 								<hr class="divider my-4" />
@@ -587,14 +579,14 @@
 		flex: 1;
 	}
 	
-	.year-grade-input {
+	.year-grade-display {
 		width: 4rem;
 		padding: 0.75rem;
-		background-color: var(--color-bg-elevated);
-		color: var(--color-text-primary);
-		border: 1px solid var(--color-border);
+		background-color: var(--color-bg-base);
+		color: var(--color-accent);
 		border-radius: var(--radius-sm);
-		font-size: 1rem;
+		font-size: 1.125rem;
+		font-weight: 500;
 		text-align: center;
 	}
 	

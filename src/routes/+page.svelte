@@ -37,7 +37,10 @@
 				beisitz: antritt.beisitzId ? store.getKommissionsmitglied(antritt.beisitzId) : undefined,
 				kv: antritt.kvId ? store.getKommissionsmitglied(antritt.kvId) : undefined,
 				themengebiet: antritt.themenwahl 
-					? store.themengebiete.find(t => String(t.id) === String(antritt.themenwahl))?.bezeichnung 
+					? (() => {
+						const t = store.themengebiete.find(t => String(t.id) === String(antritt.themenwahl));
+						return t ? `${t.nr}. ${t.bezeichnung}` : null;
+					})()
 					: null
 			}))
 			.sort((a, b) => {
@@ -64,7 +67,7 @@
 						<th rowspan="2" class="col-status"></th>
 						<th rowspan="2" class="col-name">Name</th>
 						<th rowspan="2" class="col-fach">Fach</th>
-						<th rowspan="2" class="col-topic">Thema</th>
+						<th rowspan="2" class="col-topic">Themengebiet</th>
 						<th colspan="3" class="col-group-header">Kommission</th>
 						<th colspan="3" class="col-group-header">Ablauf</th>
 					</tr>

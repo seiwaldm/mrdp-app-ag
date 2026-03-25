@@ -13,12 +13,14 @@
 	let newKandidatId = $state<number | string>('');
 	let newFachId = $state<number | string>('');
 	let newDate = $state('');
+	let newJahresnote = $state<number | string>('');
 
 	// Edit state
 	let editingId = $state<number | string | null>(null);
 	let editKandidatId = $state<number | string>('');
 	let editFachId = $state<number | string>('');
 	let editDate = $state('');
+	let editJahresnote = $state<number | string>('');
 
 	// Delete state
 	let deletingId = $state<number | string | null>(null);
@@ -27,9 +29,12 @@
 		loading = true;
 		const { data: rows } = await supabase
 			.from('antritte')
-			.select('id, kandidat_id, fach_id, start_vb')
+			.select('id, kandidat_id, fach_id, start_vb, antritte_noten(jahresnote)')
 			.order('id');
-		data = (rows || []);
+		data = (rows || []).map((r: any) => ({
+			...r,
+			jahresnote: (Array.isArray(r.antritte_noten) ? r.antritte_noten[0]?.jahresnote : r.antritte_noten?.jahresnote) ?? null
+		}));
 		loading = false;
 	}
 
@@ -75,6 +80,7 @@
 		editKandidatId = row.kandidat_id ?? '';
 		editFachId = row.fach_id ?? '';
 		editDate = extractDateForInput(row.start_vb);
+		editJahresnote = row.jahresnote ?? '';
 	}
 
 	function cancelEdit() {
@@ -98,6 +104,14 @@
 				})
 				.eq('id', id);
 			if (dbError) throw dbError;
+
+			const jn = editJahresnote ? Number(editJahresnote) : null;
+			const { error: notenError } = await supabase
+				.from('antritte_noten')
+				.update({ jahresnote: jn })
+				.eq('id', id);
+			if (notenError) throw notenError;
+
 			editingId = null;
 			await loadData();
 			await store.init();
@@ -113,6 +127,7 @@
 		newKandidatId = '';
 		newFachId = '';
 		newDate = '';
+		newJahresnote = '';
 	}
 
 	function cancelAdd() {
@@ -140,7 +155,8 @@
 
 			// Create corresponding antritte_noten row
 			if (inserted) {
-				await supabase.from('antritte_noten').insert({ id: inserted.id });
+				const jn = newJahresnote ? Number(newJahresnote) : null;
+				await supabase.from('antritte_noten').insert({ id: inserted.id, jahresnote: jn });
 			}
 
 			addingNew = false;
@@ -197,6 +213,7 @@
 						<th class="col-id">ID</th>
 						<th>Kandidat/in</th>
 						<th>Fach</th>
+						<th>Jahresnote</th>
 						<th>Datum</th>
 						<th class="col-actions">Aktionen</th>
 					</tr>
@@ -220,6 +237,16 @@
 										{#each store.faecher as f}
 											<option value={f.id}>{f.bezeichnung} ({f.kurzform})</option>
 										{/each}
+									</select>
+								</td>
+								<td>
+									<select class="edit-input font-mono" bind:value={editJahresnote}>
+										<option value="">—</option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
 									</select>
 								</td>
 								<td>
@@ -251,6 +278,7 @@
 								<td class="col-id">{row.id}</td>
 								<td>{getKandidatName(row.kandidat_id)}</td>
 								<td>{getFachName(row.fach_id)}</td>
+								<td>{row.jahresnote || '—'}</td>
 								<td>{extractDate(row.start_vb)}</td>
 								<td class="col-actions">
 									<div class="action-group">
@@ -279,6 +307,16 @@
 									{#each store.faecher as f}
 										<option value={f.id}>{f.bezeichnung} ({f.kurzform})</option>
 									{/each}
+								</select>
+							</td>
+							<td>
+								<select class="edit-input font-mono" bind:value={newJahresnote}>
+									<option value="">—</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
 								</select>
 							</td>
 							<td>

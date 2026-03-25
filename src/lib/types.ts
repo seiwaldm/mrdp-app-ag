@@ -15,6 +15,7 @@ export interface Themengebiet {
 	id: number | string;
 	bezeichnung: string;
 	fachId: number | string;
+	nr: number;
 }
 
 export interface Kommissionsmitglied {

@@ -109,7 +109,8 @@ class MrdpStore {
 			this.themengebiete = (topics || []).map((t: any) => ({
 				id: t.id,
 				bezeichnung: t.bezeichnung,
-				fachId: t.fach_id
+				fachId: t.fach_id,
+				nr: t.nr
 			})) as Themengebiet[];
 			this.kommission = (commission || []) as Kommissionsmitglied[];
 			

@@ -124,8 +124,8 @@ describe('Admin CRUD Operations', () => {
 	describe('Themengebiete', () => {
 		it('should load themengebiete from supabase', async () => {
 			const mockData = [
-				{ id: 1, bezeichnung: 'Marketing', fach_id: 1 },
-				{ id: 2, bezeichnung: 'Finanzierung', fach_id: 1 },
+				{ id: 1, bezeichnung: 'Marketing', fach_id: 1, nr: 1 },
+				{ id: 2, bezeichnung: 'Finanzierung', fach_id: 1, nr: 2 },
 			];
 			const chain = createMockChain(mockData);
 			vi.mocked(supabase.from).mockReturnValue(chain);
@@ -137,7 +137,7 @@ describe('Admin CRUD Operations', () => {
 		});
 
 		it('should insert a themengebiet with fach_id FK', async () => {
-			const newTopic = { bezeichnung: 'Recht', fach_id: 1 };
+			const newTopic = { bezeichnung: 'Recht', fach_id: 1, nr: 3 };
 			const chain = createMockChain([{ id: 3, ...newTopic }]);
 			vi.mocked(supabase.from).mockReturnValue(chain);
 

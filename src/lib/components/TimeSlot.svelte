@@ -41,17 +41,9 @@
 		const input = event.target as HTMLInputElement;
 		let newTime = input.value;
 		
-		// Basic validation/formatting for HH:mm
-		if (newTime.length === 2 && !newTime.includes(':')) {
-			newTime += ':';
-		}
-		
-		if (newTime.length === 5) {
-			const [h, m] = newTime.split(':').map(Number);
-			if (h >= 0 && h < 24 && m >= 0 && m < 60) {
-				const date = datePart || new Date().toISOString().split('T')[0];
-				onChange(`${date}T${newTime}`);
-			}
+		if (newTime) {
+			const date = datePart || new Date().toISOString().split('T')[0];
+			onChange(`${date}T${newTime}`);
 		}
 	}
 </script>
@@ -62,7 +54,6 @@
 		{#if readonly}
 			<div class="time-display font-mono">
 				{#if datePart || timePart}
-					<span class="date-val">{datePart}</span>
 					<span class="time-val">{timePart}</span>
 				{:else}
 					<span class="empty-val">—</span>
@@ -74,19 +65,10 @@
 			</button>
 			<div class="input-group">
 				<input 
-					type="date" 
-					class="date-input font-mono" 
-					value={datePart} 
-					oninput={handleDateChange}
-					class:filled={datePart}
-				/>
-				<input 
-					type="text" 
+					type="time" 
 					class="time-input-forced font-mono" 
 					value={timePart} 
 					oninput={handleTimeChange}
-					placeholder="HH:mm"
-					maxlength="5"
 					class:filled={timePart}
 				/>
 			</div>
@@ -146,7 +128,7 @@
 		color: var(--color-bg-base);
 	}
 	
-	.date-input, .time-input-forced {
+	.time-input-forced {
 		background: none;
 		border: none;
 		color: var(--color-text-muted);
@@ -154,17 +136,12 @@
 		padding: 0.25rem;
 	}
 
-	.date-input {
-		width: 8rem;
-		border-right: 1px solid var(--color-border);
-	}
-
 	.time-input-forced {
-		width: 4rem;
+		width: 6rem;
 		text-align: center;
 	}
 	
-	.date-input.filled, .time-input-forced.filled {
+	.time-input-forced.filled {
 		color: var(--color-accent);
 	}
 	
@@ -182,11 +159,6 @@
 		font-size: 0.875rem;
 		color: var(--color-accent);
 		padding: 0.25rem 0.5rem;
-	}
-
-	.date-val {
-		border-right: 1px solid var(--color-border);
-		padding-right: 0.75rem;
 	}
 
 	.empty-val {

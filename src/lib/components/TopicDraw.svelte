@@ -9,9 +9,9 @@
 		onDraw,
 		onSelect
 	}: {
-		availableTopics: Array<{ id: string | number; bezeichnung: string; }>;
-		drawnTopic1?: { id: string | number; bezeichnung: string; } | null;
-		drawnTopic2?: { id: string | number; bezeichnung: string; } | null;
+		availableTopics: Array<{ id: string | number; bezeichnung: string; nr?: number }>;
+		drawnTopic1?: { id: string | number; bezeichnung: string; nr?: number } | null;
+		drawnTopic2?: { id: string | number; bezeichnung: string; nr?: number } | null;
 		selectedTopicId?: string | number | null;
 		onDraw: (topic1: any, topic2: any) => void;
 		onSelect: (topicId: string | number) => void;
@@ -41,7 +41,7 @@
 	}
 	
 	function confirmReset() {
-		if (confirm('Möchten Sie die Themen wirklich erneut ziehen? Die aktuelle Auswahl wird gelöscht.')) {
+		if (confirm('Möchten Sie die Themengebiete wirklich erneut ziehen? Die aktuelle Auswahl wird gelöscht.')) {
 			onDraw(null, null);
 		}
 	}
@@ -52,12 +52,12 @@
 	
 	{#if !hasDrawn}
 		<button type="button" class="btn-draw" onclick={drawTopics}>
-			🎲 Zwei Themen ziehen
+			🎲 Zwei Themengebiete ziehen
 		</button>
 {:else}
 		<div class="drawn-topics">
 			<div class="topic-row">
-				<span class="topic-label">Thema 1:</span>
+				<span class="topic-label">Themengebiet 1:</span>
 				{#if drawnTopic1}
 					<TopicCard 
 						topic={drawnTopic1} 
@@ -69,7 +69,7 @@
 			</div>
 			
 			<div class="topic-row">
-				<span class="topic-label">Thema 2:</span>
+				<span class="topic-label">Themengebiet 2:</span>
 				{#if drawnTopic2}
 					<TopicCard 
 						topic={drawnTopic2} 
@@ -82,11 +82,15 @@
 			
 			{#if selectedTopicId}
 				<div class="selected-info">
-					✓ Gewähltes Thema: <strong>{selectedTopicId === drawnTopic1?.id ? drawnTopic1.bezeichnung : drawnTopic2?.bezeichnung}</strong>
+					✓ Gewähltes Themengebiet: <strong>
+						{selectedTopicId === drawnTopic1?.id 
+							? (drawnTopic1.nr !== undefined ? `${drawnTopic1.nr}. ` : '') + drawnTopic1.bezeichnung 
+							: (drawnTopic2?.nr !== undefined ? `${drawnTopic2?.nr}. ` : '') + drawnTopic2?.bezeichnung}
+					</strong>
 				</div>
 			{:else}
 				<div class="selection-prompt">
-					Bitte wählen Sie ein Thema für die Prüfung
+					Bitte wählen Sie ein Themengebiet für die Prüfung
 				</div>
 			{/if}
 			
