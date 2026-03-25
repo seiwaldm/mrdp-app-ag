@@ -8,7 +8,7 @@ const config = {
 			strict: false
 		}),
 		paths: {
-			base: process.env.NODE_ENV === 'production' ? '/mrdp-app-ag' : '',
+			base: (process.env.NODE_ENV === 'production' || process.env.GITHUB_ACTIONS === 'true') ? '/mrdp-app-ag' : '',
 		}
 	},
 	vitePlugin: {

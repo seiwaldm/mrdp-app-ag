@@ -190,7 +190,7 @@ class MrdpStore {
 	}
 
 	async signInWithMagicLink(email: string) {
-		const redirectUrl = `${window.location.origin}${base}/auth/callback`;
+		const redirectUrl = new URL(`${base}/auth/callback`, window.location.origin).toString();
 		const { error } = await supabase.auth.signInWithOtp({
 			email,
 			options: {
