@@ -211,15 +211,20 @@
 					{#if antritt?.themenwahl}
 						<div class="aufgaben-nr mt-4">
 							<label for="aufgaben-nr" class="grade-label">Aufgaben-Nr.:</label>
-							<input 
-								id="aufgaben-nr"
-								type="number" 
-								class="aufgaben-input font-mono" 
-								value={antritt?.aufgabeNr || ''}
-								oninput={handleAufgabenNr}
-								placeholder="z.B. A1"
-								readonly={store.userRole !== 'admin'}
-							/>
+							{#if store.userRole === 'admin'}
+								<input 
+									id="aufgaben-nr"
+									type="number" 
+									class="aufgaben-input font-mono" 
+									value={antritt?.aufgabeNr || ''}
+									oninput={handleAufgabenNr}
+									placeholder="z.B. A1"
+								/>
+							{:else}
+								<div class="aufgaben-display font-mono">
+									{antritt?.aufgabeNr || '—'}
+								</div>
+							{/if}
 						</div>
 					{/if}
 
@@ -548,6 +553,16 @@
 	.aufgaben-input:focus {
 		outline: none;
 		border-color: var(--color-accent);
+	}
+
+	.aufgaben-display {
+		flex: 1;
+		padding: 0.75rem;
+		background-color: var(--color-bg-base);
+		color: var(--color-accent);
+		border-radius: var(--radius-sm);
+		font-size: 1.125rem;
+		font-weight: 500;
 	}
 	
 	.grade-row {
