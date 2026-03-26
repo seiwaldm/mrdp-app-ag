@@ -14,7 +14,15 @@ vi.mock('./supabase', () => {
 			auth: {
 				getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
 				onAuthStateChange: vi.fn()
-			}
+			},
+			channel: vi.fn(() => {
+				const ch: any = {
+					on: vi.fn(() => ch),
+					subscribe: vi.fn(() => ch)
+				};
+				return ch;
+			}),
+			removeChannel: vi.fn()
 		}
 	};
 });

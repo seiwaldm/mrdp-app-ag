@@ -17,6 +17,7 @@ class MrdpStore {
 	session = $state<any>(null);
 	userRole = $state<UserRole | null>(null);
 	private authInitialized = false;
+	private realtimeChannel: any = null;
 
 	// Helper to format ISO to YYYY-MM-DDTHH:mm for datetime-local input
 	private formatToDateTimeLocal(iso: string | null): string | null {
@@ -143,6 +144,10 @@ class MrdpStore {
 				}
 			}
 			this.loading = false;
+			
+			if (this.session) {
+				this.initRealtime();
+			}
 		}
 	}
 
@@ -187,7 +192,82 @@ class MrdpStore {
 			if (session && this.antritte.length === 0) {
 				this.init();
 			}
+			
+			if (!session) {
+				this.cleanupRealtime();
+			}
 		});
+	}
+
+	private initRealtime() {
+		if (this.realtimeChannel) return;
+
+		this.realtimeChannel = supabase.channel('antritte-changes')
+			.on(
+				'postgres_changes',
+				{ event: '*', schema: 'public', table: 'antritte' },
+				(payload) => {
+					this.handleRealtimeUpdate('antritte', payload);
+				}
+			)
+			.on(
+				'postgres_changes',
+				{ event: '*', schema: 'public', table: 'antritte_noten' },
+				(payload) => {
+					this.handleRealtimeUpdate('antritte_noten', payload);
+				}
+			)
+			.subscribe();
+	}
+
+	private cleanupRealtime() {
+		if (this.realtimeChannel) {
+			supabase.removeChannel(this.realtimeChannel);
+			this.realtimeChannel = null;
+		}
+	}
+
+	private handleRealtimeUpdate(table: string, payload: any) {
+		if (table === 'antritte') {
+			if (payload.eventType === 'INSERT') {
+				// We refresh to correctly join data, but do it quietly
+				this.init();
+			} else if (payload.eventType === 'UPDATE') {
+				const updated = payload.new;
+				const existing = this.antritte.find(a => String(a.id) === String(updated.id));
+				if (existing) {
+					existing.kandidatId = updated.kandidat_id;
+					existing.fachId = updated.fach_id;
+					existing.startVB = this.formatToDateTimeLocal(updated.start_vb);
+					existing.beginn = this.formatToDateTimeLocal(updated.beginn);
+					existing.ende = this.formatToDateTimeLocal(updated.ende);
+					existing.thema1Id = updated.thema1_id;
+					existing.thema2Id = updated.thema2_id;
+					existing.themenwahl = updated.themenwahl;
+					existing.prueferId = updated.pruefer_id;
+					existing.beisitzId = updated.beisitz_id;
+					existing.kvId = updated.kv_id;
+					existing.aufgabeNr = updated.aufgabe_nr;
+				}
+			} else if (payload.eventType === 'DELETE') {
+				this.antritte = this.antritte.filter(a => String(a.id) !== String(payload.old.id));
+			}
+		} else if (table === 'antritte_noten') {
+			if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+				const updated = payload.new;
+				const existing = this.antritte.find(a => String(a.id) === String(updated.id));
+				if (existing) {
+					if ('pruefungsnote' in updated) existing.pruefungsnote = updated.pruefungsnote;
+					if ('jahresnote' in updated) existing.jahresnote = updated.jahresnote;
+				}
+			} else if (payload.eventType === 'DELETE') {
+				const existing = this.antritte.find(a => String(a.id) === String(payload.old.id));
+				if (existing) {
+					existing.pruefungsnote = null;
+					existing.jahresnote = null;
+				}
+			}
+		}
 	}
 
 	async signInWithMagicLink(email: string) {
@@ -202,6 +282,7 @@ class MrdpStore {
 	}
 
 	async signOut() {
+		this.cleanupRealtime();
 		const { error } = await supabase.auth.signOut();
 		if (error) throw error;
 		// Clear local data
