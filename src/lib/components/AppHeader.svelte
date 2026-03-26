@@ -17,6 +17,8 @@
 	import { base } from '$app/paths';
 	import { goto } from '$app/navigation';
 	import { store } from '$lib/store.svelte';
+	import logoLight from '$lib/assets/Logo-horizontal-Claim-CMYK.png';
+	import logoDark from '$lib/assets/Logo-horizontal-Claim-CMYK_negativ.png';
 
 	async function handleSignOut() {
 		try {
@@ -46,8 +48,12 @@
 				<a href="{base}/" class="back-button">← Zurück</a>
 			{:else}
 				<div class="app-title">
-					<span class="app-mark">⊕</span>
-					<span class="app-name font-display">{title}</span>
+					<img 
+						src={store.theme === 'light' ? logoLight : logoDark} 
+						alt="MRDP Logo" 
+						class="app-logo"
+						
+					/>
 				</div>
 			{/if}
 		</div>
@@ -132,16 +138,10 @@
 		gap: 0.5rem;
 	}
 	
-	.app-mark {
-		font-size: 1.5rem;
-		color: var(--color-accent);
-	}
-	
-	.app-name {
-		font-size: 1.5rem;
-		font-weight: 600;
-		color: var(--color-text-primary);
-		letter-spacing: 0.05em;
+	.app-logo {
+		height: 64px;
+		width: auto;
+		display: block;
 	}
 	
 	.back-button {

@@ -5,7 +5,7 @@
 	import { base } from '$app/paths';
 	import { store } from '$lib/store.svelte';
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/Logo-Sig.svg';
 
 	let { children } = $props();
 
