@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Themengebiet } from '$lib/types';
+	import Modal from './Modal.svelte';
 
 	let {
 		availableTopics,
@@ -16,6 +17,8 @@
 		onDraw: (t1: any, t2: any) => void;
 		onSelect: (id: string | number | null) => void;
 	} = $props();
+
+	let isResetModalOpen = $state(false);
 
 	function handleTopic1Change(e: Event) {
 		const val = (e.target as HTMLSelectElement).value;
@@ -36,6 +39,11 @@
 		onSelect(val || null);
 	}
 
+	function confirmReset() {
+		onDraw(null, null);
+		isResetModalOpen = false;
+	}
+
 	let selectedTopic1 = $derived(availableTopics.find((t) => String(t.id) === String(drawnTopic1Id)));
 	let selectedTopic2 = $derived(availableTopics.find((t) => String(t.id) === String(drawnTopic2Id)));
 
@@ -43,7 +51,16 @@
 </script>
 
 <div class="topic-admin-selection">
-	<h3 class="section-title">THEMENZIEHUNG (ADMIN)</h3>
+	<div class="header-with-action">
+		<h3 class="section-title">THEMENZIEHUNG (ADMIN)</h3>
+		<button 
+			type="button" 
+			class="btn-reset" 
+			onclick={() => isResetModalOpen = true}
+		>
+			Themenziehung zurücksetzen
+		</button>
+	</div>
 
 	<div class="selection-grid">
 		<div class="selection-field">
@@ -88,6 +105,19 @@
 			</select>
 		</div>
 	</div>
+
+	<Modal 
+		isOpen={isResetModalOpen} 
+		onClose={() => isResetModalOpen = false}
+		title="Themenziehung zurücksetzen?"
+	>
+		<p>Möchten Sie die Themengebiete wirklich erneut ziehen? Die aktuelle Auswahl wird gelöscht.</p>
+		
+		{#snippet footer()}
+			<button class="btn-ghost" onclick={() => isResetModalOpen = false}>Abbrechen</button>
+			<button class="btn-danger" onclick={confirmReset}>Ja, zurücksetzen</button>
+		{/snippet}
+	</Modal>
 </div>
 
 <style>
@@ -98,6 +128,13 @@
 		padding: 1.5rem;
 	}
 
+	.header-with-action {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.25rem;
+	}
+
 	.section-title {
 		font-family: var(--font-sans);
 		font-size: 0.75rem;
@@ -105,7 +142,7 @@
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		color: var(--color-text-muted);
-		margin: 0 0 1.25rem 0;
+		margin: 0;
 	}
 
 	.selection-grid {
@@ -170,4 +207,51 @@
             grid-column: span 1;
         }
     }
+
+	.btn-reset {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--color-state-exam);
+		background-color: transparent;
+		border: 1px solid var(--color-state-exam);
+		padding: 0.4rem 0.75rem;
+		border-radius: var(--radius-sm);
+		cursor: pointer;
+		transition: all 150ms ease;
+	}
+
+	.btn-reset:hover {
+		background-color: var(--color-state-exam);
+		color: #fff;
+	}
+
+	.btn-ghost {
+		background: none;
+		border: 1px solid var(--color-border);
+		color: var(--color-text-secondary);
+		padding: 0.5rem 1rem;
+		border-radius: var(--radius-sm);
+		font-size: 0.875rem;
+		cursor: pointer;
+		font-weight: 500;
+	}
+
+	.btn-ghost:hover {
+		background-color: var(--color-bg-elevated);
+	}
+
+	.btn-danger {
+		background-color: var(--color-state-exam);
+		color: #fff;
+		border: none;
+		padding: 0.5rem 1rem;
+		border-radius: var(--radius-sm);
+		font-size: 0.875rem;
+		cursor: pointer;
+		font-weight: 600;
+	}
+
+	.btn-danger:hover {
+		opacity: 0.9;
+	}
 </style>

@@ -52,12 +52,6 @@
 	function selectTopic(topicId: string | number) {
 		onSelect(topicId);
 	}
-	
-	function confirmReset() {
-		if (confirm('Möchten Sie die Themengebiete wirklich erneut ziehen? Die aktuelle Auswahl wird gelöscht.')) {
-			onDraw(null, null);
-		}
-	}
 </script>
 
 <div class="topic-draw">
@@ -116,10 +110,6 @@
 					Bitte wählen Sie ein Themengebiet für die Prüfung
 				</div>
 			{/if}
-			
-			<button type="button" class="btn-redraw" onclick={confirmReset}>
-				Erneut ziehen
-			</button>
 		</div>
 	{/if}
 </div>
@@ -217,21 +207,5 @@
 		color: var(--color-text-secondary);
 		font-size: 0.875rem;
 		text-align: center;
-	}
-	
-	.btn-redraw {
-		padding: 0.5rem 1rem;
-		background-color: transparent;
-		color: var(--color-text-muted);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-sm);
-		font-size: 0.875rem;
-		cursor: pointer;
-		transition: all 150ms;
-	}
-	
-	.btn-redraw:hover {
-		background-color: var(--color-bg-elevated);
-		color: var(--color-text-secondary);
 	}
 </style>
