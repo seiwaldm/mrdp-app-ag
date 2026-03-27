@@ -417,15 +417,32 @@ class MrdpStore {
 		const availableTopics = this.getThemengebieteForFach(antritt.fachId);
 		if (availableTopics.length < 2) return;
 
-		const shuffled = [...availableTopics].sort(() => 0.5 - Math.random());
-		const thema1 = shuffled[0];
-		const thema2 = shuffled[1];
+		try {
+			const { data, error: funcError } = await supabase.functions.invoke('generate-random-numbers', {
+				body: { topicCount: availableTopics.length }
+			});
 
-		await this.updateAntritt(antrittId, {
-			thema1Id: thema1.id,
-			thema2Id: thema2.id,
-			themenwahl: null
-		});
+			if (funcError || !data || !Array.isArray(data)) {
+				throw new Error(funcError?.message || 'Failed to generate random numbers');
+			}
+
+			// data is [num1, num2] where each is 1..topicCount
+			const thema1 = availableTopics[data[0] - 1];
+			const thema2 = availableTopics[data[1] - 1];
+
+			if (!thema1 || !thema2) {
+				throw new Error('Invalid topic indices returned from random function');
+			}
+
+			await this.updateAntritt(antrittId, {
+				thema1Id: thema1.id,
+				thema2Id: thema2.id,
+				themenwahl: null
+			});
+		} catch (e: any) {
+			console.error('Failed to draw topics via Edge Function:', e);
+			this.error = e.message || 'Fehler beim Ziehen der Themen.';
+		}
 	}
 
 	reset() {
