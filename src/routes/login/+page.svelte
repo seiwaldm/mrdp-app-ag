@@ -5,6 +5,9 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
+	import logoLight from '$lib/assets/Logo-horizontal-Claim-CMYK.png';
+	import logoDark from '$lib/assets/Logo-horizontal-Claim-CMYK_negativ.png';
+
 	let email = $state('');
 	let loading = $state(false);
 	let message = $state<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -49,7 +52,14 @@
 	
 	<main class="login-card" in:fade={{ duration: 400 }}>
 		<header class="login-header">
-			<div class="logo">MRDP</div>
+			<div class="logo">
+				<img 
+					src={store.theme === 'light' ? logoLight : logoDark} 
+					alt="MRDP Logo" 
+					class="login-logo"
+				
+				/>
+			</div>
 			<h1 class="font-display">Willkommen zurück</h1>
 			<p class="subtitle">Gib deine E-Mail-Adresse ein, um einen Magic Link zu erhalten.</p>
 		</header>
@@ -86,9 +96,7 @@
 			{/if}
 		</form>
 
-		<footer class="login-footer">
-			<p>© {new Date().getFullYear()} MRDP Admin</p>
-		</footer>
+		
 	</main>
 </div>
 
@@ -131,14 +139,21 @@
 	.login-header {
 		text-align: center;
 		margin-bottom: 2.5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.logo {
-		font-weight: 800;
-		letter-spacing: 0.1em;
-		color: var(--color-accent);
-		margin-bottom: 1rem;
-		font-size: 0.875rem;
+		margin-bottom: 1.5rem;
+		display: flex;
+		justify-content: center;
+	}
+
+	.login-logo {
+		height: 92px;
+		width: auto;
+		display: block;
 	}
 
 	h1 {
