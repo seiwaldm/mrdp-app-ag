@@ -8,7 +8,8 @@
 		drawnTopic2Id = null,
 		selectedTopicId = null,
 		onDraw,
-		onSelect
+		onSelect,
+		onDrawRequest
 	}: {
 		availableTopics: Themengebiet[];
 		drawnTopic1Id?: string | number | null;
@@ -16,6 +17,7 @@
 		selectedTopicId?: string | number | null;
 		onDraw: (t1: any, t2: any) => void;
 		onSelect: (id: string | number | null) => void;
+		onDrawRequest?: () => void;
 	} = $props();
 
 	let isResetModalOpen = $state(false);
@@ -53,13 +55,25 @@
 <div class="topic-admin-selection">
 	<div class="header-with-action">
 		<h3 class="section-title">THEMENZIEHUNG (ADMIN)</h3>
-		<button 
-			type="button" 
-			class="btn-reset" 
-			onclick={() => isResetModalOpen = true}
-		>
-			Themenziehung zurücksetzen
-		</button>
+		<div class="actions">
+			{#if onDrawRequest}
+				<button 
+					type="button" 
+					class="btn-random" 
+					onclick={onDrawRequest}
+					title="Zufällig ziehen"
+				>
+					🎲
+				</button>
+			{/if}
+			<button 
+				type="button" 
+				class="btn-reset" 
+				onclick={() => isResetModalOpen = true}
+			>
+				Themenziehung zurücksetzen
+			</button>
+		</div>
 	</div>
 
 	<div class="selection-grid">
@@ -133,6 +147,13 @@
 		align-items: center;
 		justify-content: space-between;
 		margin-bottom: 1.25rem;
+		gap: 0.5rem;
+	}
+
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.section-title {
@@ -253,5 +274,20 @@
 
 	.btn-danger:hover {
 		opacity: 0.9;
+	}
+
+	.btn-random {
+		padding: 0.4rem 0.6rem;
+		background-color: var(--color-bg-elevated);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		cursor: pointer;
+		font-size: 0.875rem;
+		transition: all 150ms ease;
+	}
+
+	.btn-random:hover {
+		background-color: var(--color-border);
+		transform: scale(1.05);
 	}
 </style>
