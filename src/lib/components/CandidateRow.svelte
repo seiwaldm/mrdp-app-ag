@@ -62,9 +62,9 @@
 	<td class="col-person group-start">{formatPerson(kv)}</td>
 	<td class="col-person">{formatPerson(pruefer)}</td>
 	<td class="col-person group-end">{formatPerson(beisitz)}</td>
-	<td class="col-time font-mono group-start" class:filled={antritt.startVB}>{formatTime(antritt.startVB)}</td>
-	<td class="col-time font-mono" class:filled={antritt.beginn}>{formatTime(antritt.beginn)}</td>
-	<td class="col-time font-mono group-end" class:filled={antritt.ende}>{formatTime(antritt.ende)}</td>
+	<td class="col-time col-time-start font-mono group-start" class:filled={antritt.startVB} data-label="Start VB">{formatTime(antritt.startVB)}</td>
+	<td class="col-time col-time-beginn font-mono" class:filled={antritt.beginn} data-label="Beginn">{formatTime(antritt.beginn)}</td>
+	<td class="col-time col-time-ende font-mono group-end" class:filled={antritt.ende} data-label="Ende">{formatTime(antritt.ende)}</td>
 </tr>
 
 <style>
@@ -179,11 +179,17 @@
 	
 	@media (max-width: 640px) {
 		.candidate-row {
-			display: block;
-			margin-bottom: 1rem;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 0.5rem;
+			padding: 1.25rem;
+			margin-bottom: 1.25rem;
 			border-left: 4px solid var(--color-border);
-			border-radius: var(--radius-sm);
+			border-radius: var(--radius-md);
 			background-color: var(--color-bg-surface);
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+			position: relative;
 		}
 		
 		.candidate-row:hover {
@@ -191,13 +197,67 @@
 		}
 		
 		td {
-			display: inline;
+			display: block;
+			padding: 0;
+			width: auto !important;
+			border: none;
 		}
 		
-		/* Hide columns not needed in mobile */
+		.col-status {
+			width: auto !important;
+			margin-right: 0.5rem;
+		}
+
+		.col-name {
+			flex: 1;
+			font-size: 1.25rem;
+			font-weight: 700;
+			color: var(--color-text-primary);
+		}
+
+		.col-fach {
+			width: 100% !important;
+			margin-top: 0.25rem;
+		}
+
+		.col-topic {
+			width: 100% !important;
+			font-size: 0.875rem;
+			color: var(--color-text-secondary);
+			font-style: italic;
+			min-height: 1.25rem;
+			margin-bottom: 0.5rem;
+			padding-bottom: 0.75rem;
+			border-bottom: 1px solid var(--color-border) !important;
+		}
+
+		.col-time {
+			flex: 1;
+			display: flex !important;
+			flex-direction: column;
+			gap: 0.25rem;
+			font-size: 0.875rem;
+			text-align: left !important;
+		}
+
+		.col-time::before {
+			content: attr(data-label);
+			font-size: 0.625rem;
+			text-transform: uppercase;
+			color: var(--color-text-muted);
+			font-weight: 700;
+			letter-spacing: 0.05em;
+		}
+
+		/* Hide unused columns */
 		.col-nr,
 		.col-person {
 			display: none;
+		}
+
+		/* Reset group paddings */
+		.group-start, .group-end {
+			padding: 0 !important;
 		}
 	}
 </style>

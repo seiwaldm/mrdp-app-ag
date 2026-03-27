@@ -178,14 +178,20 @@
 		.table-container {
 			background-color: transparent;
 			border: none;
+			overflow: visible;
 		}
 		
+		.candidates-table {
+			display: block;
+		}
+
 		.candidates-table thead {
 			display: none;
 		}
 		
 		.candidates-table tbody {
 			display: block;
+			padding: 0;
 		}
 	}
 </style>

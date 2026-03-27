@@ -349,7 +349,7 @@
 	}
 	
 	.detail-content {
-		max-width: 1200px;
+		max-width: 1100px;
 		margin: 0 auto;
 		padding: 2rem;
 	}
@@ -484,10 +484,16 @@
 	}
 	
 	.name-large {
-		font-size: 2rem;
+		font-size: 2.5rem;
 		line-height: 1.1;
 		color: var(--color-text-primary);
-		margin: 0 0 0.25rem 0;
+		margin: 0 0 0.5rem 0;
+	}
+	
+	@media (max-width: 640px) {
+		.name-large {
+			font-size: 1.75rem;
+		}
 	}
 	
 	.klasse-info {
@@ -549,6 +555,19 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
+	}
+	
+	@media (max-width: 640px) {
+		.aufgaben-nr {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+			padding: 1rem;
+		}
+		
+		.aufgaben-input, .aufgaben-display {
+			width: 100%;
+		}
 	}
 	
 	.aufgaben-input {
@@ -654,15 +673,43 @@
 		color: var(--color-text-secondary);
 	}
 	
-	.not-found a {
-		color: var(--color-accent);
-		text-decoration: none;
-		margin-top: 1rem;
+	@media (max-width: 640px) {
+		.grade-row {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+
+		.grade-label {
+			width: 100%;
+		}
+
+		.grade-row .flex-1 {
+			width: 100%;
+		}
+
+		.year-grade-display {
+			width: 100%;
+		}
+
+		.final-grade {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+
+		.final-grade-label {
+			width: 100%;
+		}
 	}
 	
 	@media (max-width: 640px) {
 		.detail-content {
-			padding: 1rem;
+			padding: 1rem 0.5rem;
+		}
+
+		.timeline-slots, .beurteilung-card, .aufgaben-nr {
+			padding: 1rem 0.75rem;
 		}
 	}
 </style>

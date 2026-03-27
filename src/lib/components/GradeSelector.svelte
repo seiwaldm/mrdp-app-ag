@@ -26,13 +26,14 @@
 <style>
 	.grade-selector {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.5rem;
 	}
 	
 	.grade-btn {
 		flex: 1;
-		min-width: 2.5rem;
-		padding: 0.75rem 1rem;
+		min-width: 2.25rem;
+		padding: 0.75rem 0.5rem;
 		background-color: var(--color-bg-elevated);
 		color: var(--color-text-secondary);
 		border: 1px solid var(--color-border);
@@ -42,6 +43,13 @@
 		cursor: pointer;
 		transition: all 150ms;
 	}
+    
+    @media (max-width: 640px) {
+        .grade-btn {
+            padding: 0.6rem 0.4rem;
+            min-width: 2rem;
+        }
+    }
 	
 	.grade-btn:hover {
 		background-color: var(--color-bg-surface);

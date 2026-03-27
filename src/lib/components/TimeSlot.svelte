@@ -164,4 +164,27 @@
 	.empty-val {
 		color: var(--color-text-muted);
 	}
+	@media (max-width: 640px) {
+		.time-slot {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+
+		.time-label {
+			min-width: 0;
+		}
+
+		.time-controls {
+			width: 100%;
+		}
+
+		.input-group {
+			flex: 1;
+		}
+
+		.time-input-forced {
+			width: 100%;
+		}
+	}
 </style>

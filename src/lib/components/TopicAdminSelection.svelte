@@ -221,11 +221,32 @@
 	}
     
     @media (max-width: 640px) {
+        .header-with-action {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .actions {
+            width: 100%;
+        }
+
+        .btn-reset {
+            width: 100%;
+            text-align: center;
+        }
+
         .selection-grid {
             grid-template-columns: 1fr;
+            gap: 1rem;
         }
+
         .full-width {
             grid-column: span 1;
+        }
+
+        .topic-admin-selection {
+            padding: 1rem;
         }
     }
 

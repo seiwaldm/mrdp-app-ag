@@ -138,10 +138,17 @@
 		gap: 0.5rem;
 	}
 	
+	@media (max-width: 500px) {
+		.app-logo {
+			display: none;
+		}
+	}
+
 	.app-logo {
 		height: 64px;
 		width: auto;
 		display: block;
+		object-fit: contain;
 	}
 	
 	.back-button {
@@ -278,11 +285,22 @@
 	
 	@media (max-width: 640px) {
 		.header-content {
-			padding: 0.75rem 1rem;
+			padding: 0.75rem 0.75rem;
+			gap: 0.5rem;
 		}
 		
 		.header-center {
 			display: none;
+		}
+
+		.user-email {
+			display: none;
+		}
+
+		.user-info {
+			margin-right: 0;
+			padding-right: 0;
+			border-right: none;
 		}
 	}
 </style>
