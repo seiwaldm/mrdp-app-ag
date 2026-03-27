@@ -4,6 +4,8 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { store } from '$lib/store.svelte';
+	import favicon from '$lib/assets/favicon.svg';
+
 	import '../app.css';
 	
 
@@ -24,6 +26,7 @@
 	});
 </script>
 
+<svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 
 {#if store.loading}
