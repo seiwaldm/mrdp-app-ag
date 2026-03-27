@@ -285,12 +285,40 @@
 	
 	@media (max-width: 640px) {
 		.header-content {
-			padding: 0.75rem 0.75rem;
+			padding: 0.5rem 0.75rem;
 			gap: 0.5rem;
 		}
 		
-		.header-center {
+		.header-left {
+			flex: 0 0 auto;
+		}
+
+		.app-logo {
 			display: none;
+		}
+
+		.header-center {
+			flex: 1;
+			display: flex !important;
+			text-align: center;
+		}
+
+		.date-select {
+			font-size: 1.125rem;
+			padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+		}
+
+		.date-text {
+			font-size: 1rem;
+		}
+
+		.subtitle-container {
+			display: none;
+		}
+
+		.header-right {
+			flex: 0 0 auto;
+			gap: 0.5rem;
 		}
 
 		.user-email {
