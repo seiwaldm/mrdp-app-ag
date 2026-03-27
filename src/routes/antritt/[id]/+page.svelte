@@ -7,6 +7,7 @@
 	import FachChip from '$lib/components/FachChip.svelte';
 	import TimeSlot from '$lib/components/TimeSlot.svelte';
 	import TopicDraw from '$lib/components/TopicDraw.svelte';
+	import TopicAdminSelection from '$lib/components/TopicAdminSelection.svelte';
 	import GradeSelector from '$lib/components/GradeSelector.svelte';
 	import CommissionPanel from '$lib/components/CommissionPanel.svelte';
 
@@ -46,7 +47,7 @@
 		}
 	}
 
-	function handleSelectTopic(topicId: string | number) {
+	function handleSelectTopic(topicId: string | number | null) {
 		if (antritt) {
 			store.updateAntritt(antrittId, { themenwahl: topicId });
 		}
@@ -193,14 +194,25 @@
 
 				<!-- RIGHT PANEL -->
 				<div class="right-panel">
-					<TopicDraw 
-						availableTopics={store.getThemengebieteForFach(antritt!.fachId)}
-						drawnTopic1={antritt?.thema1Id ? store.themengebiete.find(t => String(t.id) === String(antritt!.thema1Id)) : null}
-						drawnTopic2={antritt?.thema2Id ? store.themengebiete.find(t => String(t.id) === String(antritt!.thema2Id)) : null}
-						selectedTopicId={antritt?.themenwahl || null}
-						onDraw={handleDrawTopics}
-						onSelect={handleSelectTopic}
-					/>
+					{#if store.userRole === 'admin'}
+						<TopicAdminSelection 
+							availableTopics={store.getThemengebieteForFach(antritt!.fachId)}
+							drawnTopic1Id={antritt?.thema1Id}
+							drawnTopic2Id={antritt?.thema2Id}
+							selectedTopicId={antritt?.themenwahl}
+							onDraw={handleDrawTopics}
+							onSelect={handleSelectTopic}
+						/>
+					{:else}
+						<TopicDraw 
+							availableTopics={store.getThemengebieteForFach(antritt!.fachId)}
+							drawnTopic1={antritt?.thema1Id ? store.themengebiete.find(t => String(t.id) === String(antritt!.thema1Id)) : null}
+							drawnTopic2={antritt?.thema2Id ? store.themengebiete.find(t => String(t.id) === String(antritt!.thema2Id)) : null}
+							selectedTopicId={antritt?.themenwahl || null}
+							onDraw={handleDrawTopics}
+							onSelect={handleSelectTopic}
+						/>
+					{/if}
 					
 					{#if antritt?.themenwahl}
 						<div class="aufgaben-nr mt-4">
