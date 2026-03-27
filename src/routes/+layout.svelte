@@ -5,7 +5,7 @@
 	import { base } from '$app/paths';
 	import { store } from '$lib/store.svelte';
 	import '../app.css';
-	import favicon from '$lib/assets/Logo-Sig.svg';
+	
 
 	let { children } = $props();
 
@@ -24,7 +24,7 @@
 	});
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+
 
 {#if store.loading}
 	<div class="loading-screen">
