@@ -14,12 +14,14 @@
 
   /* === Accent colors === */
   --color-accent: #e8c547;
+  --color-accent-rgb: 232, 197, 71;
   --color-accent-dim: #7a6920;
 
   /* === Exam state colors === */
   --color-state-waiting: #3b82f6; /* Blue */
   --color-state-prep: #ef4444;    /* Red */
   --color-state-exam: #e8c547;    /* Yellow */
+  --color-state-exam-rgb: 232, 197, 71;
   --color-state-done: #22c55e;    /* Green */
 
   /* === Typography === */
@@ -54,7 +56,10 @@
   --color-text-muted: #374151;
 
   --color-accent: #854d0e;
+  --color-accent-rgb: 133, 77, 14;
   --color-accent-dim: #fef3c7;
+  --color-state-exam: #854d0e;
+  --color-state-exam-rgb: 133, 77, 14;
 }
 
 /* === Base styles === */
