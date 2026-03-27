@@ -74,6 +74,12 @@
 			store.updateAntritt(antrittId, { aufgabeNr: isNaN(val) ? null : val });
 		}
 	}
+
+	async function handleDrawRequest() {
+		if (antritt) {
+			await store.drawTopics(antrittId);
+		}
+	}
 </script>
 
 <div class="page-container">
@@ -211,6 +217,7 @@
 							selectedTopicId={antritt?.themenwahl || null}
 							onDraw={handleDrawTopics}
 							onSelect={handleSelectTopic}
+							onDrawRequest={handleDrawRequest}
 						/>
 					{/if}
 					

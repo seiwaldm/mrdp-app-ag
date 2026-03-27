@@ -7,7 +7,8 @@
 		drawnTopic2 = null,
 		selectedTopicId = null,
 		onDraw,
-		onSelect
+		onSelect,
+		onDrawRequest
 	}: {
 		availableTopics: Array<{ id: string | number; bezeichnung: string; nr?: number }>;
 		drawnTopic1?: { id: string | number; bezeichnung: string; nr?: number } | null;
@@ -15,18 +16,30 @@
 		selectedTopicId?: string | number | null;
 		onDraw: (topic1: any, topic2: any) => void;
 		onSelect: (topicId: string | number) => void;
+		onDrawRequest?: () => Promise<void>;
 	} = $props();
 	
+	let isDrawing = $state(false);
 	let hasDrawn = $derived(!!drawnTopic1 && !!drawnTopic2);
 	let canSelect = $derived(hasDrawn && selectedTopicId === null);
 	
-	function drawTopics() {
+	async function drawTopics() {
 		if (availableTopics.length < 2) {
 			alert('Nicht genügend Themengebiete verfügbar');
 			return;
 		}
+
+		if (onDrawRequest) {
+			isDrawing = true;
+			try {
+				await onDrawRequest();
+			} finally {
+				isDrawing = false;
+			}
+			return;
+		}
 		
-		// Fisher-Yates shuffle and pick first two
+		// Fallback for local shuffle (e.g. in tests)
 		const shuffled = [...availableTopics];
 		for (let i = shuffled.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
@@ -51,10 +64,20 @@
 	<h3 class="section-title">THEMENZIEHUNG</h3>
 	
 	{#if !hasDrawn}
-		<button type="button" class="btn-draw" onclick={drawTopics}>
-			🎲 Zwei Themengebiete ziehen
+		<button 
+			type="button" 
+			class="btn-draw" 
+			class:loading={isDrawing}
+			onclick={drawTopics} 
+			disabled={isDrawing}
+		>
+			{#if isDrawing}
+				<span class="spinner"></span> Ziehe Themen...
+			{:else}
+				🎲 Zwei Themengebiete ziehen
+			{/if}
 		</button>
-{:else}
+	{:else}
 		<div class="drawn-topics">
 			<div class="topic-row">
 				<span class="topic-label">Themengebiet 1:</span>
@@ -123,17 +146,40 @@
 		width: 100%;
 		padding: 1rem 1.5rem;
 		background-color: var(--color-accent);
-		color: var(--color-bg-base);
+		color: #fff;
 		border: none;
 		border-radius: var(--radius-sm);
 		font-size: 1rem;
 		font-weight: 600;
 		cursor: pointer;
-		transition: opacity 150ms;
+		transition: all 150ms;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
 	}
 	
-	.btn-draw:hover {
+	.btn-draw:hover:not(:disabled) {
 		opacity: 0.9;
+		transform: translateY(-1px);
+	}
+
+	.btn-draw:disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
+	}
+
+	.spinner {
+		width: 20px;
+		height: 20px;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-radius: 50%;
+		border-top-color: white;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 	
 	.drawn-topics {
