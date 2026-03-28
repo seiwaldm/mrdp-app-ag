@@ -154,6 +154,7 @@
 		height: 92px;
 		width: auto;
 		display: block;
+		object-fit: contain;
 	}
 
 	h1 {
