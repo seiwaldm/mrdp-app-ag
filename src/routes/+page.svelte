@@ -29,20 +29,25 @@
 	let filteredAntritte = $derived(
 		store.antritte
 			.filter(a => !localSelectedDate || (a.startVB && a.startVB.startsWith(localSelectedDate)))
-			.map((antritt) => ({
-				antritt,
-				kandidat: store.getKandidat(antritt.kandidatId)!,
-				fach: store.getFach(antritt.fachId)!,
-				pruefer: antritt.prueferId ? store.getKommissionsmitglied(antritt.prueferId) : undefined,
-				beisitz: antritt.beisitzId ? store.getKommissionsmitglied(antritt.beisitzId) : undefined,
-				kv: antritt.kvId ? store.getKommissionsmitglied(antritt.kvId) : undefined,
-				themengebiet: antritt.themenwahl 
-					? (() => {
-						const t = store.themengebiete.find(t => String(t.id) === String(antritt.themenwahl));
-						return t ? `${t.nr}. ${t.bezeichnung}` : null;
-					})()
-					: null
-			}))
+			.map((antritt) => {
+				const kandidat = store.getKandidat(antritt.kandidatId);
+				const fach = store.getFach(antritt.fachId);
+				return {
+					antritt,
+					kandidat,
+					fach,
+					pruefer: antritt.prueferId ? store.getKommissionsmitglied(antritt.prueferId) : undefined,
+					beisitz: antritt.beisitzId ? store.getKommissionsmitglied(antritt.beisitzId) : undefined,
+					kv: antritt.kvId ? store.getKommissionsmitglied(antritt.kvId) : undefined,
+					themengebiet: antritt.themenwahl 
+						? (() => {
+							const t = store.themengebiete.find(t => String(t.id) === String(antritt.themenwahl));
+							return t ? `${t.nr}. ${t.bezeichnung}` : null;
+						})()
+						: null
+				};
+			})
+			.filter((item): item is typeof item & { kandidat: NonNullable<typeof item.kandidat>; fach: NonNullable<typeof item.fach> } => !!(item.kandidat && item.fach))
 			.sort((a, b) => {
 				const timeA = a.antritt.startVB || '9999-99-99T99:99';
 				const timeB = b.antritt.startVB || '9999-99-99T99:99';
