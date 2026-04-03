@@ -202,6 +202,11 @@
 		cursor: pointer;
 	}
 
+	.admin-select option {
+		background-color: var(--color-bg-elevated);
+		color: var(--color-text-primary);
+	}
+
 	.admin-select:focus {
 		outline: none;
 		border-color: var(--color-accent);

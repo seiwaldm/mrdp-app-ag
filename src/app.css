@@ -46,6 +46,7 @@
 
 /* === Light Theme Overrides === */
 :root.light {
+  color-scheme: light;
   --color-bg-base: #f8fafc;
   --color-bg-surface: #ffffff;
   --color-bg-elevated: #f1f5f9;
@@ -64,6 +65,7 @@
 
 /* === Base styles === */
 html {
+  color-scheme: dark;
   background-color: var(--color-bg-base);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
