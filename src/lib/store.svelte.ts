@@ -437,7 +437,8 @@ class MrdpStore {
 			await this.updateAntritt(antrittId, {
 				thema1Id: thema1.id,
 				thema2Id: thema2.id,
-				themenwahl: null
+				themenwahl: null,
+				aufgabeNr: null
 			});
 		} catch (e: any) {
 			console.error('Failed to draw topics via Edge Function:', e);

@@ -42,14 +42,18 @@
 			store.updateAntritt(antrittId, {
 				thema1Id: t1?.id || null,
 				thema2Id: t2?.id || null,
-				themenwahl: null
+				themenwahl: null,
+				aufgabeNr: null
 			});
 		}
 	}
 
 	function handleSelectTopic(topicId: string | number | null) {
 		if (antritt) {
-			store.updateAntritt(antrittId, { themenwahl: topicId });
+			store.updateAntritt(antrittId, { 
+				themenwahl: topicId,
+				aufgabeNr: null
+			});
 		}
 	}
 
