@@ -69,11 +69,12 @@
 		loading = true;
 		const { data: rows } = await supabase
 			.from('antritte')
-			.select('id, kandidat_id, fach_id, start_vb, antritte_noten(jahresnote)')
+			.select('id, kandidat_id, fach_id, start_vb, antritte_noten(jahresnote, maturanote)')
 			.order('id');
 		data = (rows || []).map((r: any) => ({
 			...r,
-			jahresnote: (Array.isArray(r.antritte_noten) ? r.antritte_noten[0]?.jahresnote : r.antritte_noten?.jahresnote) ?? null
+			jahresnote: (Array.isArray(r.antritte_noten) ? r.antritte_noten[0]?.jahresnote : r.antritte_noten?.jahresnote) ?? null,
+			maturanote: (Array.isArray(r.antritte_noten) ? r.antritte_noten[0]?.maturanote : r.antritte_noten?.maturanote) ?? null
 		}));
 		loading = false;
 	}
@@ -268,6 +269,12 @@
 								<span class="sort-icon" class:active={sortKey === 'jahresnote'}>{sortKey === 'jahresnote' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</span>
 							</div>
 						</th>
+						<th class="sortable-header" onclick={() => toggleSort('maturanote')}>
+							<div class="header-content">	
+								<span>Maturanote</span>
+								<span class="sort-icon" class:active={sortKey === 'maturanote'}>{sortKey === 'maturanote' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</span>
+							</div>
+						</th>
 						<th class="sortable-header" onclick={() => toggleSort('start_vb')}>
 							<div class="header-content">	
 								<span>Datum</span>
@@ -307,6 +314,7 @@
 										<option value="5">5</option>
 									</select>
 								</td>
+								<td></td>
 								<td>
 									<input type="date" class="edit-input" bind:value={editDate} />
 								</td>
@@ -336,6 +344,7 @@
 								<td>{getKandidatName(row.kandidat_id)}</td>
 								<td>{getFachName(row.fach_id)}</td>
 								<td>{row.jahresnote || '—'}</td>
+								<td><strong>{row.maturanote || '—'}</strong></td>
 								<td>{extractDate(row.start_vb)}</td>
 								<td class="col-actions">
 									<div class="action-group">
@@ -375,6 +384,7 @@
 									<option value="5">5</option>
 								</select>
 							</td>
+							<td></td>
 							<td>
 								<input type="date" class="edit-input" bind:value={newDate} />
 							</td>

@@ -50,4 +50,5 @@ export interface Antritt {
 	aufgabeNr?: number | null;
 	pruefungsnote?: 1 | 2 | 3 | 4 | 5 | null;
 	jahresnote?: number | null;
+	maturanote?: number | null;
 }

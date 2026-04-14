@@ -116,4 +116,34 @@ describe('MrdpStore', () => {
 		expect(antritt?.thema2Id).not.toBeNull();
 		expect(antritt?.thema1Id).not.toBe(antritt?.thema2Id);
 	});
+
+	describe('Maturanote Calculation', () => {
+		it('should calculate the mean for integer results', () => {
+			expect(store.calculateMaturanote(2, 4)).toBe(3);
+			expect(store.calculateMaturanote(1, 3)).toBe(2);
+		});
+
+		it('should use the pruefungsnote for x.5 results', () => {
+			// (2+3)/2 = 2.5
+			expect(store.calculateMaturanote(3, 2)).toBe(2); // jn=3, pn=2 -> 2
+			expect(store.calculateMaturanote(2, 3)).toBe(3); // jn=2, pn=3 -> 3
+			
+			// (1+2)/2 = 1.5
+			expect(store.calculateMaturanote(2, 1)).toBe(1); // jn=2, pn=1 -> 1
+			expect(store.calculateMaturanote(1, 2)).toBe(2); // jn=1, pn=2 -> 2
+		});
+
+		it('should return null if any note is missing', () => {
+			expect(store.calculateMaturanote(null, 2)).toBeNull();
+			expect(store.calculateMaturanote(3, null)).toBeNull();
+			expect(store.calculateMaturanote(null, null)).toBeNull();
+		});
+
+		it('should automatically update maturanote in updateAntritt', async () => {
+			store.userRole = 'admin';
+			await store.updateAntritt(1, { jahresnote: 3, pruefungsnote: 2 });
+			const antritt = store.getAntritt(1);
+			expect(antritt?.maturanote).toBe(2);
+		});
+	});
 });

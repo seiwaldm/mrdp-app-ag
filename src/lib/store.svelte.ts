@@ -47,6 +47,12 @@ class MrdpStore {
 		}
 	}
 
+	calculateMaturanote(jn: number | null, pn: number | null): number | null {
+		if (jn === null || pn === null) return null;
+		const sum = jn + pn;
+		return sum % 2 === 0 ? sum / 2 : pn;
+	}
+
 	async init() {
 		this.loading = true;
 		this.error = null;
@@ -89,7 +95,7 @@ class MrdpStore {
 		try {
 			const antritteQuery = this.userRole === 'admin'
 				? supabase.from('antritte').select('*, antritte_noten(*)')
-				: supabase.from('antritte').select('*');
+				: supabase.from('antritte').select('*, antritte_noten(id, maturanote)');
 
 			const [
 				{ data: candidates },
@@ -130,7 +136,8 @@ class MrdpStore {
 				kvId: a.kv_id,
 				aufgabeNr: a.aufgabe_nr,
 				pruefungsnote: (a.antritte_noten?.[0] || a.antritte_noten)?.pruefungsnote ?? null,
-				jahresnote: (a.antritte_noten?.[0] || a.antritte_noten)?.jahresnote ?? null
+				jahresnote: (a.antritte_noten?.[0] || a.antritte_noten)?.jahresnote ?? null,
+				maturanote: (a.antritte_noten?.[0] || a.antritte_noten)?.maturanote ?? null
 			})) as Antritt[];
 		} catch (e: any) {
 			console.error('Failed to load data from Supabase', e);
@@ -259,12 +266,14 @@ class MrdpStore {
 				if (existing) {
 					if ('pruefungsnote' in updated) existing.pruefungsnote = updated.pruefungsnote;
 					if ('jahresnote' in updated) existing.jahresnote = updated.jahresnote;
+					if ('maturanote' in updated) existing.maturanote = updated.maturanote;
 				}
 			} else if (payload.eventType === 'DELETE') {
 				const existing = this.antritte.find(a => String(a.id) === String(payload.old.id));
 				if (existing) {
 					existing.pruefungsnote = null;
 					existing.jahresnote = null;
+					existing.maturanote = null;
 				}
 			}
 		}
@@ -394,6 +403,16 @@ class MrdpStore {
 			if (Object.keys(dbUpdates).length > 0) {
 				promises.push(supabase.from('antritte').update(dbUpdates).eq('id', id));
 			}
+			
+			// Recalculate maturanote if needed
+			if ('pruefungsnote' in updates || 'jahresnote' in updates) {
+				const finalPn = updates.pruefungsnote !== undefined ? updates.pruefungsnote : currentAntritt.pruefungsnote;
+				const finalJn = updates.jahresnote !== undefined ? updates.jahresnote : currentAntritt.jahresnote;
+				const maturanote = this.calculateMaturanote(finalJn || null, finalPn || null);
+				notenUpdates.maturanote = maturanote;
+				this.antritte[index].maturanote = maturanote;
+			}
+
 			if (Object.keys(notenUpdates).length > 0 && this.userRole === 'admin') {
 				promises.push(supabase.from('antritte_noten').upsert({ id, ...notenUpdates }));
 			}

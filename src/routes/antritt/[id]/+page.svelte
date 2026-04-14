@@ -24,12 +24,6 @@
 
 	let status = $derived(antritt ? store.getExamState(antritt) : 'waiting');
 
-	let computedMark = $derived.by(() => {
-		if (antritt && antritt.pruefungsnote && antritt.jahresnote) {
-			return Math.round((antritt.pruefungsnote + antritt.jahresnote) / 2);
-		}
-		return null;
-	});
 
 	function updateTime(field: 'startVB' | 'beginn' | 'ende', timeStr: string) {
 		if (antritt) {
@@ -273,8 +267,8 @@
 								<div class="final-grade">
 									<span class="final-grade-label">Maturazeugnis:</span>
 									<span class="final-grade-value font-mono">
-										{#if computedMark}
-											<span class="equals-sign">=</span> {computedMark} <span class="muted-text">(errechnet)</span>
+										{#if antritt?.maturanote}
+											<span class="equals-sign">=</span> {antritt.maturanote}
 										{:else}
 											<span class="muted-text">—</span>
 										{/if}
