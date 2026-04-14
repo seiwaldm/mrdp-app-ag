@@ -84,24 +84,15 @@ describe('TopicDraw.svelte', () => {
 		expect(screen.getAllByText('Topic 1')).toHaveLength(2); // One in the list, one in the selection info
 	});
 
-	it('should call onDraw(null, null) when redraw button is clicked and confirmed', async () => {
-		const onDraw = vi.fn();
-		const confirmSpy = vi.spyOn(window, 'confirm').mockImplementation(() => true);
-		
+	it('should NOT show the redraw button (restricted to admin)', () => {
 		render(TopicDraw, {
 			availableTopics: mockTopics,
 			drawnTopic1: mockTopics[0],
 			drawnTopic2: mockTopics[1],
-			onDraw,
+			onDraw: vi.fn(),
 			onSelect: vi.fn()
 		});
 
-		const redrawButton = screen.getByText(/Themenziehung zurücksetzen/i);
-		await fireEvent.click(redrawButton);
-
-		expect(confirmSpy).toHaveBeenCalled();
-		expect(onDraw).toHaveBeenCalledWith(null, null);
-		
-		confirmSpy.mockRestore();
+		expect(screen.queryByText(/Themenziehung zurücksetzen/i)).toBeNull();
 	});
 });

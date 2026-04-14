@@ -22,7 +22,10 @@ vi.mock('./supabase', () => {
 				};
 				return ch;
 			}),
-			removeChannel: vi.fn()
+			removeChannel: vi.fn(),
+			functions: {
+				invoke: vi.fn().mockResolvedValue({ data: [1, 2], error: null })
+			}
 		}
 	};
 });
