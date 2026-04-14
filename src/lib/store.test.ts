@@ -131,6 +131,10 @@ describe('MrdpStore', () => {
 			// (1+2)/2 = 1.5
 			expect(store.calculateMaturanote(2, 1)).toBe(1); // jn=2, pn=1 -> 1
 			expect(store.calculateMaturanote(1, 2)).toBe(2); // jn=1, pn=2 -> 2
+
+			// (2+5)/2 = 3.5
+			expect(store.calculateMaturanote(2, 5)).toBe(4); // jn=2, pn=5 -> 4
+			expect(store.calculateMaturanote(5, 2)).toBe(3); // jn=5, pn=2 -> 3
 		});
 
 		it('should return null if any note is missing', () => {

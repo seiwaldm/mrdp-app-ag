@@ -49,8 +49,14 @@ class MrdpStore {
 
 	calculateMaturanote(jn: number | null, pn: number | null): number | null {
 		if (jn === null || pn === null) return null;
-		const sum = jn + pn;
-		return sum % 2 === 0 ? sum / 2 : pn;
+		const mean = (jn + pn) / 2;
+		if (pn > jn) {
+			return Math.ceil(mean);
+		} else if (pn < jn) {
+			return Math.floor(mean);
+		} else {
+			return jn;
+		}
 	}
 
 	async init() {
