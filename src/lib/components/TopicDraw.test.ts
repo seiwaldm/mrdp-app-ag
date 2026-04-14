@@ -96,7 +96,7 @@ describe('TopicDraw.svelte', () => {
 			onSelect: vi.fn()
 		});
 
-		const redrawButton = screen.getByText(/Erneut ziehen/i);
+		const redrawButton = screen.getByText(/Themenziehung zurücksetzen/i);
 		await fireEvent.click(redrawButton);
 
 		expect(confirmSpy).toHaveBeenCalled();
