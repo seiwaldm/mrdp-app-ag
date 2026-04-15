@@ -32,12 +32,5 @@
 		"@sveltejs/adapter-static": "^3.0.10",
 		"jspdf": "^4.2.1",
 		"jspdf-autotable": "^5.0.7"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"core-js",
-			"esbuild",
-			"@tailwindcss/oxide"
-		]
 	}
 }
