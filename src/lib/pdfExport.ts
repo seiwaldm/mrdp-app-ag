@@ -39,16 +39,16 @@ export function exportAntrittePdf() {
 
 		const head: any = [
 			[
-				{ content: 'KandidatInnen', colSpan: 3, styles: { halign: 'center', fillColor: [230, 230, 230] } },
-				{ content: 'Vorbereitung', colSpan: 4, styles: { halign: 'center', fillColor: [245, 245, 245] } },
-				{ content: 'Prüfung', colSpan: 2, styles: { halign: 'center', fillColor: [230, 230, 230] } },
-				{ content: 'Fach', rowSpan: 2, styles: { valign: 'middle', halign: 'center' } },
-				{ content: 'zus. Kommissionsmitglieder', colSpan: 3, styles: { halign: 'center', fillColor: [245, 245, 245] } },
-				{ content: 'Note', colSpan: 3, styles: { halign: 'center', fillColor: [230, 230, 230] } }
+				{ content: 'KandidatInnen', colSpan: 3, styles: { halign: 'center', fillColor: [52, 152, 219], textColor: 255 } },
+				{ content: 'Vorbereitung', colSpan: 4, styles: { halign: 'center', fillColor: [41, 128, 185], textColor: 255 } },
+				{ content: 'Prüfung', colSpan: 2, styles: { halign: 'center', fillColor: [31, 97, 141], textColor: 255 } },
+				{ content: 'Fach', rowSpan: 2, styles: { valign: 'middle', halign: 'center', fillColor: [23, 165, 137], textColor: 255 } },
+				{ content: 'zus. Kommissionsmitglieder', colSpan: 3, styles: { halign: 'center', fillColor: [26, 188, 156], textColor: 255 } },
+				{ content: 'Note', colSpan: 3, styles: { halign: 'center', fillColor: [230, 126, 34], textColor: 255 } }
 			],
 			[
-				'Nr.', 'Name', 'AZ Themen',
-				'Gez. Themen', 'gew. Thema', 'Aufgaben Nr.', 'Start VB',
+				'Nr.', 'Name', 'AZ\nThemen',
+				'Gez.\nThemen', 'gew.\nThema', 'Aufg.\nNr.', 'Start VB',
 				'Beginn', 'Ende',
 				'KV/Stv.', 'PrüferIn', 'Beisitz',
 				'P', 'JN', 'ZN'
@@ -132,25 +132,26 @@ export function exportAntrittePdf() {
 			body: body,
 			startY: 20,
 			theme: 'grid',
-			styles: { fontSize: 8, cellPadding: 2, textColor: [0, 0, 0] },
-			headStyles: { fillColor: [245, 245, 245], textColor: [0, 0, 0], fontStyle: 'bold' },
+			styles: { fontSize: 8, cellPadding: 2, textColor: [50, 50, 50], lineColor: [200, 200, 200], lineWidth: 0.1 },
+			headStyles: { fillColor: [235, 245, 251], textColor: [40, 116, 166], fontStyle: 'bold' },
+			alternateRowStyles: { fillColor: [249, 251, 252] },
 			columnStyles: {
 				0: { cellWidth: 8, halign: 'center' }, // Nr
-				1: { cellWidth: 35 }, // Name
-				2: { cellWidth: 10, halign: 'center' }, // AZ
+				1: { cellWidth: 32 }, // Name
+				2: { cellWidth: 15, halign: 'center' }, // AZ
 				3: { cellWidth: 15, halign: 'center' }, // Gez
 				4: { cellWidth: 15, halign: 'center' }, // Gew
-				5: { cellWidth: 15, halign: 'center' }, // Aufg
+				5: { cellWidth: 14, halign: 'center' }, // Aufg
 				6: { cellWidth: 15, halign: 'center' }, // Start
 				7: { cellWidth: 15, halign: 'center' }, // Beginn
 				8: { cellWidth: 15, halign: 'center' }, // Ende
-				9: { cellWidth: 15, halign: 'center' }, // Fach
+				9: { cellWidth: 18, halign: 'center' }, // Fach
 				10: { cellWidth: 25 }, // KV
 				11: { cellWidth: 25 }, // Prüf
 				12: { cellWidth: 25 }, // Beisitz
-				13: { cellWidth: 10, halign: 'center' }, // P
-				14: { cellWidth: 10, halign: 'center' }, // JN
-				15: { cellWidth: 10, halign: 'center' }  // ZN
+				13: { cellWidth: 9, halign: 'center' }, // P
+				14: { cellWidth: 9, halign: 'center' }, // JN
+				15: { cellWidth: 9, halign: 'center' }  // ZN
 			},
 			margin: { left: 10, right: 10 }
 		});
