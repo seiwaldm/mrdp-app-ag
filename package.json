@@ -29,6 +29,8 @@
 	},
 	"dependencies": {
 		"@supabase/supabase-js": "^2.99.1",
-		"@sveltejs/adapter-static": "^3.0.10"
+		"@sveltejs/adapter-static": "^3.0.10",
+		"jspdf": "^4.2.1",
+		"jspdf-autotable": "^5.0.7"
 	}
 }

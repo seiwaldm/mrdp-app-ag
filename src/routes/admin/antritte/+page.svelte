@@ -2,6 +2,7 @@
 	import { supabase } from '$lib/supabase';
 	import { store } from '$lib/store.svelte';
 	import type { Fach, Kandidat } from '$lib/types';
+	import { exportAntrittePdf } from '$lib/pdfExport';
 
 	let data = $state<any[]>([]);
 	let loading = $state(true);
@@ -234,8 +235,15 @@
 </script>
 
 <div class="crud-page">
-	<h1 class="page-title font-display">Antritte</h1>
-	<p class="page-subtitle">Prüfungsantritte verwalten — Kandidat, Fach und Datum zuweisen</p>
+	<div class="page-header">
+		<div class="page-header-text">
+			<h1 class="page-title font-display">Antritte</h1>
+			<p class="page-subtitle">Prüfungsantritte verwalten — Kandidat, Fach und Datum zuweisen</p>
+		</div>
+		<button type="button" class="btn-export" onclick={exportAntrittePdf}>
+			<span class="export-icon">📄</span> PDF Exportieren
+		</button>
+	</div>
 
 	{#if error}
 		<div class="admin-error">
@@ -412,9 +420,31 @@
 
 <style>
 	.crud-page { padding: 0.5rem 0; }
+	.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
 	.page-title { font-size: 1.5rem; color: var(--color-text-primary); margin: 0 0 0.25rem; }
-	.page-subtitle { font-size: 0.875rem; color: var(--color-text-muted); margin: 0 0 1.5rem; }
+	.page-subtitle { font-size: 0.875rem; color: var(--color-text-muted); margin: 0; }
 	.loading { padding: 2rem; text-align: center; color: var(--color-text-muted); }
+
+	.btn-export {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background-color: var(--color-bg-elevated);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		color: var(--color-text-primary);
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: all 200ms;
+	}
+
+	.btn-export:hover {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+	}
+
+	.export-icon { font-size: 1.125rem; }
 
 	.admin-error {
 		display: flex;
